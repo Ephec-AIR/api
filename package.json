@@ -1,0 +1,28 @@
+{
+  "name": "air-api",
+  "version": "1.0.0",
+  "description": "graphql api for A.I.R.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ephec-AIR/api.git"
+  },
+  "keywords": [
+    "air"
+  ],
+  "author": "Mathieu-R",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Ephec-AIR/api/issues"
+  },
+  "homepage": "https://github.com/Ephec-AIR/api#readme",
+  "dependencies": {
+    "apollo-server-express": "^1.1.2",
+    "express": "^4.16.0",
+    "graphql-tools": "^1.2.3",
+    "mongoose": "^4.11.13"
+  }
+}
