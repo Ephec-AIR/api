@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const DBURL = 'mongodb://localhost:27017/air'
+const DBURL = 'mongodb://localhost:27017/air';
+
 mongoose.Promise = global.Promise;
 mongoose.connect(DBURL, {
   useMongoClient: true,

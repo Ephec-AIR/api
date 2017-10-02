@@ -9,13 +9,14 @@ const PORT = process.env.PORT || 3000;
 const production = process.env.NODE_ENV === 'production';
 
 app.use(bodyParser.json());
-
 app.use('/graphql', graphqlExpress({
   schema,
   pretty: true
 }));
 
-app.use('/graphql-ui', graphiqlExpress({endpointURL: '/graphql'}));
+if (!production) {
+  app.use('/graphql-ui', graphiqlExpress({endpointURL: '/graphql'}));
+}
 
 http.createServer(app).listen(PORT, _ => {
   console.log(`listening on http://localhost:${PORT}`);
