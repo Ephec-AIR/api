@@ -1,8 +1,8 @@
-# air - api
-### Restful or GraphQL api for A.I.R 
+## air 
+### GraphQL api for A.I.R. 
 
-## Tech
+### Tech
 - Node
-- GraphQL ?
+- GraphQL
 - MongoDB
 - Redis (sessions)
