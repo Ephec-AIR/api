@@ -4,11 +4,11 @@ const ConsumptionSchema = new mongoose.Schema({
   date: {
     type: Date,
     default: Date.now,
-    required: 'please supply a date'
+    required: 'please supply a date for the consumption'
   },
-  consumption: {
+  value: {
     type: Number,
-    required: 'please supply a consumption'
+    required: 'please supply a consumption value'
   },
   productId: {
     type: mongoose.Schema.Types.ObjectId,

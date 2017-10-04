@@ -1,8 +1,7 @@
-const {promisify} = require('util');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const {JWT_SECRET} = require("../config");
 
 const UserSchema = new mongoose.Schema({
@@ -31,16 +30,11 @@ const UserSchema = new mongoose.Schema({
 });
 
 UserSchema.method.hashPassword = function(password) {
-  return promisify(bcrypt.genSalt)(10)
-    .then(salt => bcrypt.hash(password, salt))
-    .then(hash => hash)
-    .catch(error => error);
+  return bcrypt.genSalt(10).then(salt => bcrypt.hash(password, salt));
 }
 
 UserSchema.method.verifyPassword = function(password) {
-  return promisify(bcrypt.compare)(password, this.hash)
-    .then(response => response)
-    .catch(error => error);
+  return bcrypt.compare(password, this.hash);
 }
 
 UserSchema.method.generateJWT = function() {

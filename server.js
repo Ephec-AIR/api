@@ -12,10 +12,15 @@ const production = process.env.NODE_ENV === 'production';
 
 app.use(passport.initialize());
 app.use(bodyParser.json());
-app.use('/graphql', graphqlExpress({
-  schema,
-  pretty: true
-}));
+app.use('/graphql',
+  graphqlExpress(req => ({
+    schema,
+    context: {
+      user: req.user
+    },
+    pretty: true
+  }))
+);
 
 if (!production) {
   app.use('/graphql-ui', graphiqlExpress({endpointURL: '/graphql'}));

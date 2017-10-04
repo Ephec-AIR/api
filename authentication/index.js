@@ -18,33 +18,25 @@ passport.use(new LocalStrategy({
   return done(null, false); // password ko
 }));
 
-
-async function register(data) {
-  const {username, email, password} = data;
-
-  const hash = await User.hashPassword(password);
-  saveUserInDb(username, email, hash);
-}
-
-async function saveUserInDb(username, email, hash) {
+async function register(username, email, password) {
   const existingUser = await User.findOne({email});
   if (existingUser) {
     return console.log(`This email(${email}) is already by another account.`);
   }
 
-  const user = await new User({
+  const user = new User({
     username,
-    email,
-    hash
-  }).save();
+    email
+  });
+
+  await user.hashPassword(password);
+  await user.save();
 
   const token = user.generateJWT();
   return token;
 }
 
-function login(data) {
-  const {email, password} = data;
-
+function login(email, password) {
   // NOTE
   // passport.authenticate does not support promisify
   // you have to pass req, res to this method
@@ -63,7 +55,7 @@ function login(data) {
   })(req, res);
 }
 
-async function unregister({email, password}) {
+async function unregister(email, password) {
   const user = await User.findOne({email});
   const validated = await user.verifyPassword(password);
   if (validated) { // password ok
