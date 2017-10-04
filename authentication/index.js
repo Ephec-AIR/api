@@ -11,14 +11,14 @@ passport.use(new LocalStrategy({
   const user = await User.find({email});
   if (!user) return done(null, false); // no user
 
-  const response = await User.verifyPassword(password);
-  if (response) { // password ok
+  const isValid = await User.verifyPassword(password);
+  if (isValid) { // password ok
     return done(null, user); // user
   }
   return done(null, false); // password ko
 }));
 
-async function register({body: username, email, password}, res) {
+async function register({body: {username, email, password}}, res) {
   const existingUser = await User.findOne({email});
   if (existingUser) {
     return res.send(`This email(${email}) is already used by another account.`);
@@ -36,7 +36,7 @@ async function register({body: username, email, password}, res) {
   res.json({token});
 }
 
-function login({body: email, password}, res) {
+function login({body: {email, password}}, res) {
   // NOTE
   // passport.authenticate does not support promisify
   // you have to pass req, res to this method
@@ -55,7 +55,7 @@ function login({body: email, password}, res) {
   })(req, res);
 }
 
-async function unregister({body: email, password}, res) {
+async function unregister({body: {email, password}}, res) {
   const user = await User.findOne({email});
   const validated = await user.verifyPassword(password);
   if (validated) { // password ok

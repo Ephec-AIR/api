@@ -17,9 +17,9 @@ app.use(passport.initialize());
 app.use(bodyParser.json());
 
 // REST for authentication
-app.post('/register', register);
-app.post('/login', login);
-app.delete('/unregister', jwt, unregister);
+app.post('/register', catchErrors(register));
+app.post('/login', catchErrors(login));
+app.delete('/unregister', jwt, catchErrors(unregister));
 
 // GraphQL for protected API
 app.use('/graphql',

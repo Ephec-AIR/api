@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('../mongoose');
 const validator = require('validator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -16,7 +16,10 @@ const UserSchema = new mongoose.Schema({
     unique: true,
     lowercase: true,
     trim: true,
-    validate: [validator.isEmail, 'Invalid email address'],
+    validate: {
+      validator: value => validator.isEmail(value),
+      message: 'Invalid email address'
+    },
     required: 'Please supply an email'
   },
   hash: {
@@ -34,18 +37,19 @@ function autopopulate(next) {
   next();
 }
 
-ConsumptionSchema.pre('find', autopopulate);
-ConsumptionSchema.pre('findOne', autopopulate);
+UserSchema.pre('find', autopopulate);
+UserSchema.pre('findOne', autopopulate);
 
-UserSchema.method.hashPassword = function(password) {
-  return bcrypt.genSalt(10).then(salt => bcrypt.hash(password, salt));
+UserSchema.methods.hashPassword = async function(password) {
+  const hash = await bcrypt.hash(password, 8);
+  this.hash = hash;
 }
 
-UserSchema.method.verifyPassword = function(password) {
-  return bcrypt.compare(password, this.hash);
+UserSchema.methods.verifyPassword = async function(password) {
+  return await bcrypt.compare(password, this.hash);
 }
 
-UserSchema.method.generateJWT = function() {
+UserSchema.methods.generateJWT = function() {
   return jwt.sign({
       _id: this._id,
       username: this.username,

@@ -2,6 +2,7 @@ const {mockServer} = require('graphql-tools');
 const schema = require('../graphql/schema'); // graphql schema
 const casual = require('casual'); // fake data
 const {Query, Mutation} = require('../graphql/resolvers'); // query, mutation
+const {cleanDB} = require('../utils');
 
 // models
 const Product = require('../models/Product');
@@ -9,6 +10,10 @@ const User = require('../models/User');
 const Consumption = require('../models/Consumption');
 
 const server = mockServer(schema);
+
+beforeEach(() => {
+  cleanDB().catch(err => console.error(err));
+});
 
 it('should update a user profile', async () => {
  return;

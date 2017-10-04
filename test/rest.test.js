@@ -3,6 +3,7 @@ const schema = require('../graphql/schema'); // graphql schema
 const casual = require('casual'); // fake data
 const request = require('supertest');
 const app = require('../server');
+const {cleanDB} = require('../utils');
 
 const User = require('../models/User');
 const server = mockServer(schema);
@@ -14,8 +15,12 @@ function decodeToken(token) {
   });
 }
 
+beforeEach(() => {
+  cleanDB().catch(err => console.error(err));
+});
+
 it('should register a user', async () => {
-  const {token} = await request(app)
+  const {body: {token}} = await request(app)
     .post('/register')
     .send({
       username: 'Jean',
@@ -39,7 +44,7 @@ it('should login a user', async () => {
     });
 
   // Then login
-  const {token} = await request(app)
+  const {body: {token}} = await request(app)
     .post('/login')
     .send({
       email: 'jean@jean.be',
@@ -60,7 +65,7 @@ it('should unregister a user', async () => {
     });
 
   // Then unregister
-  const message = await request(app)
+  const response = await request(app)
     .delete('/unregister')
     .send({
       email: 'jean@jean.be',
@@ -70,5 +75,5 @@ it('should unregister a user', async () => {
   const username = (await User.findOne({username: 'Jean'})).username;
 
   expect(username).toBeNull();
-  expect(message).toBe('user deleted successfully');
+  expect(response.body).toBe('user deleted successfully');
 });
