@@ -9,6 +9,6 @@ cache:
     - node_modules
 before_script:
   - node server.js
-  - npm install -g jest
+  - npm install -g jest-cli
 script:
   - jest test

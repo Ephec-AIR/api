@@ -23,12 +23,20 @@
   "homepage": "https://github.com/Ephec-AIR/api#readme",
   "dependencies": {
     "apollo-server-express": "^1.1.2",
+    "bcrypt": "^1.0.3",
     "express": "^4.16.1",
+    "express-jwt": "^5.3.0",
     "graphql": "^0.11.6",
+    "graphql-iso-date": "^3.3.0",
     "graphql-tools": "^1.2.3",
-    "mongoose": "^4.11.14"
+    "jsonwebtoken": "^8.0.1",
+    "mongoose": "^4.11.14",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
+    "validator": "^9.0.0"
   },
   "devDependencies": {
+    "casual": "^1.5.17",
     "jest": "^21.2.1"
   }
 }
