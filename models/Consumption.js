@@ -17,5 +17,13 @@ const ConsumptionSchema = new mongoose.Schema({
   }
 });
 
+function autopopulate(next) {
+  this.populate('productId');
+  next();
+}
+
+ConsumptionSchema.pre('find', autopopulate);
+ConsumptionSchema.pre('findOne', autopopulate);
+
 const Consumption = mongoose.model('Consumption', ConsumptionSchema);
 module.exports = Consumption;

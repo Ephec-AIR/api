@@ -29,6 +29,14 @@ const UserSchema = new mongoose.Schema({
   }
 });
 
+function autopopulate(next) {
+  this.populate('productId');
+  next();
+}
+
+ConsumptionSchema.pre('find', autopopulate);
+ConsumptionSchema.pre('findOne', autopopulate);
+
 UserSchema.method.hashPassword = function(password) {
   return bcrypt.genSalt(10).then(salt => bcrypt.hash(password, salt));
 }

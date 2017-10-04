@@ -18,10 +18,10 @@ passport.use(new LocalStrategy({
   return done(null, false); // password ko
 }));
 
-async function register(username, email, password) {
+async function register({body: username, email, password}, res) {
   const existingUser = await User.findOne({email});
   if (existingUser) {
-    return console.log(`This email(${email}) is already by another account.`);
+    return res.send(`This email(${email}) is already used by another account.`);
   }
 
   const user = new User({
@@ -33,36 +33,36 @@ async function register(username, email, password) {
   await user.save();
 
   const token = user.generateJWT();
-  return token;
+  res.json({token});
 }
 
-function login(email, password) {
+function login({body: email, password}, res) {
   // NOTE
   // passport.authenticate does not support promisify
   // you have to pass req, res to this method
   passport.authenticate('local',
     {successRedirect: '/', failureRedirect: '/login'}, (error, user) => {
     if (error) {
-      console.log(error)
+      res.send(error.toString())
     }
 
     if (!user) {
-      console.log(`utilisateur (${username}) non trouvé / mauvais mot de passe.`);
+      res.send(`utilisateur (${username}) non trouvé / mauvais mot de passe.`);
     }
 
     const token = generateJWT(user);
-    return token;
+    res.json({token});
   })(req, res);
 }
 
-async function unregister(email, password) {
+async function unregister({body: email, password}, res) {
   const user = await User.findOne({email});
   const validated = await user.verifyPassword(password);
   if (validated) { // password ok
     await user.remove(); // remove user
-    return 'user deleted succefully';
+    res.send('user deleted successfully');
   }
-  console.log(`wrong password`);
+  res.send('wrong password');
 }
 
 module.exports = {

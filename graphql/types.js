@@ -28,10 +28,7 @@ const typeDefs = `
     token: String!
   }
   type Mutation {
-    register(username: String!, email: String!, password: String!): Token
-    login(email: String!, password: String!): Token
     updateUser(userId: ID!): Token
-    unregister(email: String!, password: String!): String!
     addProduct(productId: String!, postalCode: Int!): Product
     updateProduct(postalCode: Int!): Product
     addConsumption(date: Date, value: Int!, productId: String!): Consumption

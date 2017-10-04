@@ -2,8 +2,6 @@ const {
   GraphQLDate
 } = require('graphql-iso-date');
 
-const {register, login, unregister} = require('../authentication');
-
 const Product = require('../models/Product');
 const User = require('../models/User');
 const Consumption = require('../models/Consumption');
@@ -37,20 +35,8 @@ const resolvers = {
     }
   },
   Mutation: {
-    register(root, {username, email, password}) {
-      // return token
-      return register(username, email, password).catch(err => console.error(err));
-    },
-    login(root, {email, password}) {
-      // return token
-      return login(email, password).catch(err => console.error(err));
-    },
     updateUser(root, data) {
 
-    },
-    unregister(root, {email, password}) {
-      // delete user, send back confirmation message
-      return unregister(email, password).catch(err => console.error(err));
     },
     async addProduct(root, {postalCode}) {
       const product = await new Product({
