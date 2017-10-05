@@ -24,6 +24,7 @@ it('should get a list of products', async () => {
     postalCode: '1111'
   }).save();
   const products = await Query.products();
+  console.log('PRODUCTS:', products);
   expect(products.length).toHaveLength(1);
   expect(products[0]).toMatchObject({postalCode: '1111'});
 });

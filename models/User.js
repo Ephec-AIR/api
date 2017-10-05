@@ -5,26 +5,10 @@ const jwt = require('jsonwebtoken');
 const {JWT_SECRET} = require("../config");
 
 const UserSchema = new mongoose.Schema({
-  username: {
+  userId: {
     type: String,
-    unique: true,
-    trim: true,
-    required: 'Please supply an username'
-  },
-  email: {
-    type: String,
-    unique: true,
-    lowercase: true,
-    trim: true,
-    validate: {
-      validator: value => validator.isEmail(value),
-      message: 'Invalid email address'
-    },
-    required: 'Please supply an email'
-  },
-  hash: {
-    type: String,
-    required: 'Please supply an hash'
+    required: 'please supply a userId',
+    unique: true
   },
   productId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -40,20 +24,10 @@ function autopopulate(next) {
 UserSchema.pre('find', autopopulate);
 UserSchema.pre('findOne', autopopulate);
 
-UserSchema.methods.hashPassword = async function(password) {
-  const hash = await bcrypt.hash(password, 8);
-  this.hash = hash;
-}
-
-UserSchema.methods.verifyPassword = async function(password) {
-  return await bcrypt.compare(password, this.hash);
-}
-
 UserSchema.methods.generateJWT = function() {
   return jwt.sign({
-      _id: this._id,
-      username: this.username,
-      email: this.email
+      userId: this.userId,
+      productId: this.productId
   }, JWT_SECRET, {
     expiresIn: '1day',
     subject: 'air'

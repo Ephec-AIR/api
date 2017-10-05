@@ -15,6 +15,9 @@ const typeDefs = `
     value: Int!
     product: Product
   }
+  type Token {
+    token: String!
+  }
   type Query {
     products: [Product]
     users: [User]
@@ -24,12 +27,8 @@ const typeDefs = `
     user(username: String!): User
     consumption(productId: ID!): Consumption
   }
-  type Token {
-    token: String!
-  }
   type Mutation {
-    updateUser(userId: ID!): Token
-    addProduct(productId: String!, postalCode: Int!): Product
+    login(email: String!, password: String!): Token
     updateProduct(postalCode: Int!): Product
     addConsumption(date: Date, value: Int!, productId: String!): Consumption
   }
