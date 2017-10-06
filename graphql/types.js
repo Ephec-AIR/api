@@ -23,7 +23,6 @@ const typeDefs = `
   type Query {
     consumptions: [Consumption]
     product(serial: String!, token: String!): Product
-    consumption(serial: String!, token: String!): Consumption
   }
   type Mutation {
     login(email: String!, password: String!): Token

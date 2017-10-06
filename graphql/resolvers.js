@@ -16,21 +16,13 @@ const resolvers = {
       // list of consumptions
       return consumptions.find({});
     },
-    product(root, {serial, token}) {
+    async product(root, {serial, token}) {
       // single product
       const product = await Product.findOne({serial, token});
       if (!product) {
         return "Ce produit n'existe pas ou vous en n'avez pas l'autorisation d'utilisation !";
       }
       return product;
-    },
-    consumption(root, {serial, token}) {
-      // list of consumptions (delta ?) belonging to a product
-      const product = await Product.findOne({serial, token});
-      if (!product) {
-        return "Ce produit n'existe pas ou vous en n'avez pas l'autorisation d'utilisation !";
-      }
-      return await Consumption.find({productId: product._id});
     }
   },
   Mutation: {
@@ -56,6 +48,11 @@ const resolvers = {
         productId: product._id
       }).save();
       return consumption;
+    }
+  },
+  Product: {
+    async consumption({_id}, {limit}) {
+      return await Consumption.find({productId: _id}).sort({date: -1}).limit(limit);
     }
   }
 }
