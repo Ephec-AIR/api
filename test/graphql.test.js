@@ -68,24 +68,30 @@ it('should get a single product', async () => {
 });
 
 it('should get a single product and its consumption'), async () => {
-  const product = await new Product({
+  const product = new Product({
     serial,
     secret,
     token,
     postalCode: '10000'
-  }).save();
+  });
 
-  const consumption1 = await new Consumption({
+  const consumption1 = new Consumption({
     date: new Date(2017, 10, 06, 12, 00),
     value: 300,
     productId: product._id
-  }).save();
+  });
 
-  const consumption2 = await new Consumption({
+  const consumption2 = new Consumption({
     date: new Date(2017, 10, 06, 13, 00),
     value: 350,
     productId: product._id
-  }).save();
+  });
+
+  await Promise.all([
+    product.save(),
+    consumption1.save(),
+    consumption2.save()
+  ]);
 
   const data = await gqltest(`
     query {
@@ -107,36 +113,44 @@ it('should get a single product and its consumption'), async () => {
 }
 
 it('should get a single product and a number of consumption (sorted by date)'), async () => {
-  const product = await new Product({
+  const product = new Product({
     serial,
     secret,
     token,
     postalCode: '10000'
-  }).save();
+  });
 
-  const consumption1 = await new Consumption({
+  const consumption1 = new Consumption({
     date: new Date(2017, 10, 06, 12, 00),
     value: 300,
     productId: product._id
-  }).save();
+  });
 
-  const consumption2 = await new Consumption({
+  const consumption2 = new Consumption({
     date: new Date(2017, 10, 06, 13, 00),
     value: 350,
     productId: product._id
-  }).save();
+  });
 
-  const consumption3 = await new Consumption({
+  const consumption3 = new Consumption({
     date: new Date(2017, 10, 06, 14, 00),
     value: 400,
     productId: product._id
-  }).save();
+  });
 
-  const consumption4 = await new Consumption({
+  const consumption4 = new Consumption({
     date: new Date(2017, 10, 06, 15, 00),
     value: 450,
     productId: product._id
-  }).save();
+  });
+
+  await Promise.all([
+    product.save(),
+    consumption1.save(),
+    consumption2.save(),
+    consumption3.save(),
+    consumption4.save()
+  ]);
 
   const data = await gqltest(`
     query {
