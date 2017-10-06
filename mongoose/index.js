@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const DBURL = 'mongodb://localhost:27017/air';
+const production = process.env.NODE_ENV === 'production';
+const DBURL = production ? process.env.DBURL : 'mongodb://localhost:27017/air';
 
 mongoose.Promise = global.Promise;
 mongoose.connect(DBURL, {

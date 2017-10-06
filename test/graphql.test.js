@@ -12,7 +12,7 @@ const Consumption = require('../models/Consumption');
 
 const server = mockServer(schema);
 const gqltest = tester({
-  url: 'localhost:3000/graphql'
+  url: 'http://localhost:3000/graphql'
 });
 
 const serial = 'e2d36-022e2-ab182-f42e2-806fa';
@@ -26,12 +26,16 @@ function decodeToken(token) {
   });
 }
 
-beforeEach(() => {
-  cleanDB().catch(err => console.error(err));
+beforeEach(async () => {
+  try {
+    await cleanDB();
+  } catch(err) {
+    throw new Error(err.message);
+  }
 });
 
 it('should get a list of consumptions', async () => {
-  return;
+  throw new Error('not implemented');
 });
 
 it('should not get a single product if not authorized (serial, token)', async () => {
@@ -41,6 +45,23 @@ it('should not get a single product if not authorized (serial, token)', async ()
     token,
     postalCode: '10000'
   }).save();
+
+  const data = await gqltest(`
+    query {
+      product(serial: bidon, token: bidon) {
+        _id,
+        serial
+        secret
+        token
+        postalCode
+      }
+    }
+  `);
+
+  console.log(data);
+
+  // should expect an error message => to implement in gql
+  expect(data).toBeNull;
 });
 
 it('should get a single product', async () => {
@@ -76,13 +97,13 @@ it('should get a single product and its consumption'), async () => {
   });
 
   const consumption1 = new Consumption({
-    date: new Date(2017, 10, 06, 12, 00),
+    date: new Date(2017, 10, 6, 12),
     value: 300,
     productId: product._id
   });
 
   const consumption2 = new Consumption({
-    date: new Date(2017, 10, 06, 13, 00),
+    date: new Date(2017, 10, 6, 13),
     value: 350,
     productId: product._id
   });
@@ -121,25 +142,25 @@ it('should get a single product and a number of consumption (sorted by date)'), 
   });
 
   const consumption1 = new Consumption({
-    date: new Date(2017, 10, 06, 12, 00),
+    date: new Date(2017, 10, 6, 12),
     value: 300,
     productId: product._id
   });
 
   const consumption2 = new Consumption({
-    date: new Date(2017, 10, 06, 13, 00),
+    date: new Date(2017, 10, 6, 13),
     value: 350,
     productId: product._id
   });
 
   const consumption3 = new Consumption({
-    date: new Date(2017, 10, 06, 14, 00),
+    date: new Date(2017, 10, 6, 14),
     value: 400,
     productId: product._id
   });
 
   const consumption4 = new Consumption({
-    date: new Date(2017, 10, 06, 15, 00),
+    date: new Date(2017, 10, 6, 15),
     value: 450,
     productId: product._id
   });
@@ -217,7 +238,7 @@ it('should add a consumption for a product given', async () => {
   const data = await gqltest(`
     mutation {
       addConsumption(serial: ${serial}, token: ${token},
-      date: ${new Date(2017, 10, 06, 15, 00)}, value: 450, productId: ${product._id}) {
+      date: ${new Date(2017, 10, 6, 15)}, value: 450, productId: ${product._id}) {
         _id
         date
         value

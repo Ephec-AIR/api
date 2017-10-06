@@ -16,7 +16,7 @@ async function login({email, password}) {
   // attention à 404
 
   const data = await response.json();
-  const {uid, username, email, gravatarpicture} = data;
+  const {uid, username} = data;
   let user = await User.findOne({userId: uid});
   // if user does not exist in MONGODB, create it.
   if (!user) {
@@ -24,7 +24,7 @@ async function login({email, password}) {
       uid
     }).save();
   }
-  const token = user.generateJWT();
+  const token = user.generateJWT(username);
   return token;
 }
 

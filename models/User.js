@@ -25,9 +25,10 @@ UserSchema.index({userId: 1}, {unique: true});
 UserSchema.pre('find', autopopulate);
 UserSchema.pre('findOne', autopopulate);
 
-UserSchema.methods.generateJWT = function() {
+UserSchema.methods.generateJWT = function(username) {
   return jwt.sign({
       userId: this.userId,
+      username,
       productId: this.productId
   }, JWT_SECRET, {
     expiresIn: '1day',
