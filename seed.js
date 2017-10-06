@@ -34,6 +34,6 @@ const consumptions = [
 ];
 
 Product.insertMany(product).then(docs => {
-  const cs = consumptions.map(c => c.productId = docs[0]._id);
-  Consumption.insertMany(cs).then(() => process.exit(0));
+  consumptions.forEach(c => c.productId = docs[0]._id);
+  Consumption.insertMany(consumptions).then(() => process.exit(0));
 }).catch(err => console.error(err));

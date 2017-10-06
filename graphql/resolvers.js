@@ -52,7 +52,8 @@ const resolvers = {
   },
   Product: {
     async consumption({_id}, {limit}) {
-      return await Consumption.find({productId: _id}).sort({date: -1}).limit(limit);
+      const consumptions = await Consumption.find({productId: _id}).sort({date: -1}).limit(limit);
+      return consumptions;
     }
   }
 }

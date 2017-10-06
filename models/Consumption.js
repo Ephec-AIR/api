@@ -22,8 +22,8 @@ function autopopulate(next) {
   next();
 }
 
-ConsumptionSchema.pre('find', autopopulate);
-ConsumptionSchema.pre('findOne', autopopulate);
+//ConsumptionSchema.pre('find', autopopulate);
+//ConsumptionSchema.pre('findOne', autopopulate);
 
 const Consumption = mongoose.model('Consumption', ConsumptionSchema);
 module.exports = Consumption;

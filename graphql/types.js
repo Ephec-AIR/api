@@ -1,21 +1,21 @@
 const typeDefs = `
   scalar Date
   type User {
-    userId: ID!
+    userId: ID
     product: Product
   }
   type Consumption {
-    _id: ID!
-    date: Date!
-    value: Int!
+    _id: ID
+    date: Date
+    value: Int
   }
   type Product {
-    _id: ID!
-    serial: String!
-    secret: String!
-    token: String!
-    postalCode: Int!
-    consumption: Consumption!
+    _id: ID
+    serial: String
+    secret: String
+    token: String
+    postalCode: Int
+    consumption(limit: Int): Consumption
   }
   type Token {
     token: String!
