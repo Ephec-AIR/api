@@ -26,12 +26,8 @@ function decodeToken(token) {
   });
 }
 
-beforeEach(async () => {
-  try {
-    await cleanDB();
-  } catch(err) {
-    throw new Error(err.message);
-  }
+beforeAll(() => {
+  return cleanDB();
 });
 
 it('should get a list of consumptions', async () => {
@@ -65,13 +61,6 @@ it('should not get a single product if not authorized (serial, token)', async ()
 });
 
 it('should get a single product', async () => {
-  const product = await new Product({
-    serial,
-    secret,
-    token,
-    postalCode: '10000'
-  }).save();
-
   const data = await gqltest(`
     query {
       product(serial: ${serial}, token: ${token}) {
@@ -89,13 +78,6 @@ it('should get a single product', async () => {
 });
 
 it('should get a single product and its consumption'), async () => {
-  const product = new Product({
-    serial,
-    secret,
-    token,
-    postalCode: '10000'
-  });
-
   const consumption1 = new Consumption({
     date: new Date(2017, 10, 6, 12),
     value: 300,
@@ -134,25 +116,6 @@ it('should get a single product and its consumption'), async () => {
 }
 
 it('should get a single product and a number of consumption (sorted by date)'), async () => {
-  const product = new Product({
-    serial,
-    secret,
-    token,
-    postalCode: '10000'
-  });
-
-  const consumption1 = new Consumption({
-    date: new Date(2017, 10, 6, 12),
-    value: 300,
-    productId: product._id
-  });
-
-  const consumption2 = new Consumption({
-    date: new Date(2017, 10, 6, 13),
-    value: 350,
-    productId: product._id
-  });
-
   const consumption3 = new Consumption({
     date: new Date(2017, 10, 6, 14),
     value: 400,
@@ -166,9 +129,6 @@ it('should get a single product and a number of consumption (sorted by date)'), 
   });
 
   await Promise.all([
-    product.save(),
-    consumption1.save(),
-    consumption2.save(),
     consumption3.save(),
     consumption4.save()
   ]);
@@ -206,13 +166,7 @@ it('should login a user who has an account on the forum', async () => {
 });
 
 it('should update a product', async () => {
-  const product = await new Product({
-    serial,
-    secret,
-    token,
-    postalCode: '10000'
-  }).save();
-
+  const product = await Product.findOne({serial});
   const data = await gqltest(`
     mutation {
       updateProduct(productId: ${product._id.toString()}, postalCode: 77777) {
@@ -228,13 +182,7 @@ it('should update a product', async () => {
 });
 
 it('should add a consumption for a product given', async () => {
-  const product = await new Product({
-    serial,
-    secret,
-    token,
-    postalCode: '10000'
-  }).save();
-
+  const product = await Product.findOne({serial});
   const data = await gqltest(`
     mutation {
       addConsumption(serial: ${serial}, token: ${token},
