@@ -10,7 +10,7 @@ cache:
   directories:
     - node_modules
 before_script:
-  - node server.js
+  - node server.js &
   - npm install -g jest-cli
 script:
   - jest test
