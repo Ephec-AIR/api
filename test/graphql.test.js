@@ -2,6 +2,7 @@ const {mockServer} = require('graphql-tools');
 const schema = require('../graphql/schema'); // graphql schema
 const casual = require('casual'); // fake data
 const {Query, Mutation} = require('../graphql/resolvers'); // query, mutation
+const {tester} = require('graphql-tester');
 const {cleanDB} = require('../utils');
 
 // models
@@ -10,46 +11,102 @@ const User = require('../models/User');
 const Consumption = require('../models/Consumption');
 
 const server = mockServer(schema);
+const gqltest = tester({
+  url: 'localhost:3000/graphql'
+});
+
+const serial = 'e2d36-022e2-ab182-f42e2-806fa';
+const secret = 'pommepoire';
+const token = 'dab035674b6e91e2395b471b4cdf6bba558580bb';
+
+function decodeToken(token) {
+  return new Promise(resolve => {
+    const decodedToken = JSON.parse(window.atob(token.split('.')[1]));
+    resolve(decodedToken);
+  });
+}
 
 beforeEach(() => {
   cleanDB().catch(err => console.error(err));
-});
-
-it('should update a user profile', async () => {
- return;
-});
-
-it('should get a list of products', async () => {
-  const p = await new Product({
-    postalCode: '1111'
-  }).save();
-  const products = await Query.products();
-  console.log('PRODUCTS:', products);
-  expect(products.length).toHaveLength(1);
-  expect(products[0]).toMatchObject({postalCode: '1111'});
-});
-
-it('should get a list users', async () => {
-  return;
 });
 
 it('should get a list of consumptions', async () => {
   return;
 });
 
-it('should get a single product', async () => {
-  return;
+it('should not get a single product if not authorized (serial, token)', async () => {
+  const product = await new Product({
+    serial,
+    secret,
+    token,
+    postalCode: '10000'
+  }).save();
 });
 
-it('should get a single user', async () => {
-  return;
+it('should get a single product', async () => {
+  const product = await new Product({
+    serial,
+    secret,
+    token,
+    postalCode: '10000'
+  }).save();
+
+  const data = await gqltest(`
+    query {
+      product(serial: ${serial}, token: ${token}) {
+        _id,
+        serial
+        secret
+        token
+        postalCode
+      }
+    }
+  `);
+
+  console.log(data);
+  expect(data.serial).toBe(serial);
 });
+
+it('should get a single product and its consumption'), async () => {
+  const product = await new Product({
+    serial,
+    secret,
+    token,
+    postalCode: '10000'
+  }).save();
+
+  const consumption1 = await new Consumption({
+    date: new Date(2017, 10, 06, 12, 00),
+    value: 300,
+    productId: product._id
+  }).save();
+
+  const consumption2 = await new Consumption({
+    date: new Date(2017, 10, 06, 13, 00),
+    value: 350,
+    productId: product._id
+  }).save();
+
+  const data = await gqltest(`
+  query {
+    product(serial: ${serial}, token: ${token}) {
+      _id,
+      serial
+      secret
+      token
+      postalCode
+      consumption {
+        date
+        value
+      }
+    }
+  }
+`);
+
+  expect(data.consumption[1].value).toBe(350);
+}
 
 it('should get a list of consumptions for a product given', async () => {
-  return;
-});
-
-it('should add a product', async () => {
   return;
 });
 

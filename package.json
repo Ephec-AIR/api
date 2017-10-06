@@ -25,6 +25,7 @@
     "apollo-server-express": "^1.1.2",
     "bcrypt": "^1.0.3",
     "cookie-parser": "^1.4.3",
+    "dotenv": "^4.0.0",
     "express": "^4.16.1",
     "express-jwt": "^5.3.0",
     "express-validator": "^4.2.1",
@@ -33,12 +34,14 @@
     "graphql-tools": "^1.2.3",
     "jsonwebtoken": "^8.0.1",
     "mongoose": "^4.11.14",
+    "node-fetch": "^1.7.3",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "validator": "^9.0.0"
   },
   "devDependencies": {
     "casual": "^1.5.17",
+    "graphql-tester": "0.0.5",
     "jest": "^21.2.1",
     "supertest": "^3.0.0"
   }

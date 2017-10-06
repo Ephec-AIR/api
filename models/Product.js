@@ -4,9 +4,10 @@ const ProductSchema = new mongoose.Schema({
   serial: { // serial key
     type: String,
     required: 'please supply a serial key',
+    lowercase: true,
     unique: true
   },
-  secret: { // sshared secret (no hash!)
+  secret: { // shared secret (no hash!)
     type: String,
     required: 'please supply a secret'
   },
@@ -19,6 +20,8 @@ const ProductSchema = new mongoose.Schema({
     required: 'please supply a postal code'
   }
 });
+
+ProductSchema.index({serial: 1}, {unique: true});
 
 const Product = mongoose.model('Product', ProductSchema);
 module.exports = Product;

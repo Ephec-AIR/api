@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 const User = require('../models/User');
-const BASE_URL = '';
+const BASE_URL = 'air.ephec-ti.org/forum';
 
 async function login({email, password}) {
   const response = await fetch(`${BASE_URL}/api/ns/login`, {

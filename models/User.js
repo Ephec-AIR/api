@@ -2,7 +2,7 @@ const mongoose = require('../mongoose');
 const validator = require('validator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const {JWT_SECRET} = require("../config");
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const UserSchema = new mongoose.Schema({
   userId: {
@@ -21,6 +21,7 @@ function autopopulate(next) {
   next();
 }
 
+UserSchema.index({userId: 1}, {unique: true});
 UserSchema.pre('find', autopopulate);
 UserSchema.pre('findOne', autopopulate);
 
