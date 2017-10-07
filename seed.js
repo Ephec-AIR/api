@@ -1,3 +1,4 @@
+const {cleanDB} = require('./utils');
 const Product = require('./models/Product');
 const User = require('./models/User');
 const Consumption = require('./models/Consumption');
@@ -33,7 +34,17 @@ const consumptions = [
   }
 ];
 
-Product.insertMany(product).then(docs => {
-  consumptions.forEach(c => c.productId = docs[0]._id);
-  Consumption.insertMany(consumptions).then(() => process.exit(0));
-}).catch(err => console.error(err));
+function seed() {
+  return cleanDB().then(() => {
+    Product.insertMany(product).then(docs => {
+      consumptions.forEach(c => c.productId = docs[0]._id);
+      Consumption.insertMany(consumptions).then(() => process.exit(0));
+    });
+  });
+}
+
+seed().catch(err => console.error(err));
+
+
+
+

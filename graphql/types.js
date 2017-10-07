@@ -15,7 +15,7 @@ const typeDefs = `
     secret: String
     token: String
     postalCode: Int
-    consumption(limit: Int): Consumption
+    consumption(limit: Int): [Consumption]
   }
   type Token {
     token: String!

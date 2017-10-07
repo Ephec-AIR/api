@@ -1,19 +1,12 @@
-const {mockServer} = require('graphql-tools');
 const schema = require('../graphql/schema'); // graphql schema
 const casual = require('casual'); // fake data
-const {Query, Mutation} = require('../graphql/resolvers'); // query, mutation
-const {tester} = require('graphql-tester');
+const {graphql} = require('graphql');
 const {cleanDB} = require('../utils');
 
 // models
 const Product = require('../models/Product');
 const User = require('../models/User');
 const Consumption = require('../models/Consumption');
-
-const server = mockServer(schema);
-const gqltest = tester({
-  url: 'http://localhost:3000/graphql'
-});
 
 const serial = 'e2d36-022e2-ab182-f42e2-806fa';
 const secret = 'pommepoire';
@@ -30,10 +23,6 @@ beforeAll(() => {
   return cleanDB();
 });
 
-it('should get a list of consumptions', async () => {
-  throw new Error('not implemented');
-});
-
 it('should not get a single product if not authorized (serial, token)', async () => {
   const product = await new Product({
     serial,
@@ -42,39 +31,48 @@ it('should not get a single product if not authorized (serial, token)', async ()
     postalCode: '10000'
   }).save();
 
-  const data = await gqltest(`
+  const query = `
     query {
       product(serial: bidon, token: bidon) {
-        _id,
+        _id
         serial
         secret
         token
         postalCode
       }
     }
-  `);
+  `;
 
-  console.log(data);
-
+  const response = await graphql(schema, query);
   // should expect an error message => to implement in gql
-  expect(data).toBeNull;
+  expect(response.data).toMatchObject({
+    "product": {
+      "_id": null,
+      "serial": null,
+      "secret": null,
+      "token": null,
+      "postalCode": null
+    }
+  });
 });
 
 it('should get a single product', async () => {
-  const data = await gqltest(`
+  const query = `
     query {
       product(serial: ${serial}, token: ${token}) {
-        _id,
+        _id
         serial
         secret
         token
         postalCode
       }
     }
-  `);
+  `;
 
-  console.log(data);
-  expect(data.serial).toBe(serial);
+  const response = await graphql(schema, query);
+  expect(response).toHaveProperty('data');
+  expect(typeof response).toBe('object');
+  expect(response.data.product.serial).toBe(serial);
 });
 
 it('should get a single product and its consumption'), async () => {
@@ -96,10 +94,10 @@ it('should get a single product and its consumption'), async () => {
     consumption2.save()
   ]);
 
-  const data = await gqltest(`
+  const query = `
     query {
       product(serial: ${serial}, token: ${token}) {
-        _id,
+        _id
         serial
         secret
         token
@@ -110,9 +108,10 @@ it('should get a single product and its consumption'), async () => {
         }
       }
     }
-  `);
+  `;
 
-  expect(data.consumption[1].value).toBe(350);
+  const response = await graphql(schema, query);
+  expect(response.data.product.consumption[1].value).toBe(350);
 }
 
 it('should get a single product and a number of consumption (sorted by date)'), async () => {
@@ -133,10 +132,10 @@ it('should get a single product and a number of consumption (sorted by date)'), 
     consumption4.save()
   ]);
 
-  const data = await gqltest(`
+  const query = `
     query {
       product(serial: ${serial}, token: ${token}) {
-        _id,
+        _id
         serial
         secret
         token
@@ -147,27 +146,29 @@ it('should get a single product and a number of consumption (sorted by date)'), 
         }
       }
     }
-  `);
+  `;
 
-  expect(data.consumption).toHaveLength(3);
-  expect(data.consumption[3].value).toBe(450);
+  const response = await graphql(schema, query);
+  expect(response.data.product.consumption).toHaveLength(3);
+  expect(response.data.product.consumption[3].value).toBe(450);
 }
 
 it('should login a user who has an account on the forum', async () => {
-  const data = await gqltest(`
+  const query = `
     mutation {
       login (email: mathieu0709@gmail.com, password: ${process.env.USER_PWD}) {
         token
       }
     }
-  `);
+  `;
 
-  expect((await decode(data.token)).email).toBe('mathieu0709@gmail.com');
+  const response = await graphql(schema, query);
+  expect((await decode(response.data.token)).email).toBe('mathieu0709@gmail.com');
 });
 
 it('should update a product', async () => {
   const product = await Product.findOne({serial});
-  const data = await gqltest(`
+  const query = `
     mutation {
       updateProduct(productId: ${product._id.toString()}, postalCode: 77777) {
         _id
@@ -175,15 +176,16 @@ it('should update a product', async () => {
         postalCode
       }
     }
-  `);
+  `;
 
-  expect(data.serial).toBe(serial);
-  expect(data.postalCode).toBe(77777)
+  const response = await graphql(schema, query);
+  expect(response.data.product.serial).toBe(serial);
+  expect(response.data.product.postalCode).toBe(77777)
 });
 
 it('should add a consumption for a product given', async () => {
   const product = await Product.findOne({serial});
-  const data = await gqltest(`
+  const query = `
     mutation {
       addConsumption(serial: ${serial}, token: ${token},
       date: ${new Date(2017, 10, 6, 15)}, value: 450, productId: ${product._id}) {
@@ -192,8 +194,9 @@ it('should add a consumption for a product given', async () => {
         value
       }
     }
-  `);
+  `;
 
-  expect(data.date.getMonth()).toBe(10);
-  expect(data.value).toBe(450);
+  const response = await graphql(schema, query);
+  expect(response.data.consumption.date.getMonth()).toBe(10);
+  expect(response.data.consumption.value).toBe(450);
 });
