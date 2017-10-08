@@ -17,9 +17,9 @@ const resolvers = {
       // list of consumptions
       return consumptions.find({});
     },
-    async product(root, {serial, token}) {
+    async product(root, {serial, secret}) {
       // single product
-      const product = await Product.findOne({serial, token});
+      const product = await Product.findOne({serial, secret});
       if (!product) {
         return "Ce produit n'existe pas ou vous en n'avez pas l'autorisation d'utilisation !";
       }
