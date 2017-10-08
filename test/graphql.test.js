@@ -75,6 +75,7 @@ it('should get a single product', async () => {
 });
 
 it('should get a single product and its consumption'), async () => {
+  const product = await Product.findOne({serial});
   const consumption1 = new Consumption({
     date: new Date(2017, 10, 6, 12),
     value: 300,
@@ -113,6 +114,7 @@ it('should get a single product and its consumption'), async () => {
 }
 
 it('should get a single product and a number of consumption (sorted by date)'), async () => {
+  const product = await Product.findOne({serial});
   const consumption3 = new Consumption({
     date: new Date(2017, 10, 6, 14),
     value: 400,
@@ -149,6 +151,28 @@ it('should get a single product and a number of consumption (sorted by date)'), 
   const response = await graphql(schema, query);
   expect(response.data.product.consumption).toHaveLength(3);
   expect(response.data.product.consumption[3].value).toBe(450);
+}
+
+it('should get a single product and a all its consumption (sorted by date) if limit = 0'), async () => {
+  const product = await Product.findOne({serial});
+  const query = `
+    query {
+      product(serial: "${serial}", token: "${token}") {
+        _id
+        serial
+        secret
+        token
+        postalCode
+        consumption(limit: 0) {
+          date
+          value
+        }
+      }
+    }
+  `;
+
+  const response = await graphql(schema, query);
+  expect(response.data.product.consumption).toHaveLength(4);
 }
 
 /*it('should login a user who has an account on the forum', async () => {
@@ -195,6 +219,6 @@ it('should add a consumption for a product given', async () => {
   `;
 
   const response = await graphql(schema, query);
-  expect(response.data.addConsumption.date.getMonth()).toBe(10);
+  expect(new Date(response.data.addConsumption.date).getMonth()).toBe(10);
   expect(response.data.addConsumption.value).toBe(450);
 });
