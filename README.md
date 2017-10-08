@@ -33,8 +33,18 @@ const response = await fetch('https://my-graphql-api.com/graphql', {
     "Accept": "application/json"
   },
   body: JSON.stringify({
-    "query": "{allFilms {totalCount}}", 
-    "variables": null
+    "query": `
+      mutation {
+        updateProduct(productId: $productId, postalCode: $postalCode) {
+          serial
+          postalCode
+        }
+      }`, 
+    "variables": `
+    {
+      $productId: '123abc'
+      $postalCode: 77777
+    }`
   })
 });
 
@@ -53,4 +63,3 @@ Yes graphql api are self-documented.
 - Node
 - GraphQL
 - MongoDB
-- Redis (sessions)

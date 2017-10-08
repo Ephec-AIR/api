@@ -1,16 +1,17 @@
 const {
-  GraphQLDate
+  GraphQLDateTime
 } = require('graphql-iso-date');
 const {promisify} = require('util');
 const jwt = require('jsonwebtoken');
 const {login} = require('../authentication');
+const mongoose = require('../mongoose');
 
 const Product = require('../models/Product');
 const User = require('../models/User');
 const Consumption = require('../models/Consumption');
 
 const resolvers = {
-  Date: GraphQLDate,
+  Date: GraphQLDateTime,
   Query: {
     consumptions(root, data) {
       // list of consumptions
