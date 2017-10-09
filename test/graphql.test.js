@@ -33,7 +33,7 @@ it('should not get a single product if not authorized (serial, token)', async ()
 
   const query = `
     query {
-      product(serial: "bidon", token: "bidon") {
+      product(serial: "bidon", secret: "bidon") {
         _id
         serial
         secret
@@ -60,7 +60,7 @@ it('should not get a single product if not authorized (serial, token)', async ()
 it('should get a single product', async () => {
   const query = `
     query {
-      product(serial: "${serial}", token: "${token}") {
+      product(serial: "${serial}", secret: "${secret}") {
         _id
         serial
         secret
@@ -95,7 +95,7 @@ it('should get a single product and its consumption'), async () => {
 
   const query = `
     query {
-      product(serial: "${serial}", token: "${token}") {
+      product(serial: "${serial}", secret: "${secret}") {
         _id
         serial
         secret
@@ -134,7 +134,7 @@ it('should get a single product and a number of consumption (sorted by date)'), 
 
   const query = `
     query {
-      product(serial: "${serial}", token: "${token}") {
+      product(serial: "${serial}", secret: "${secret}") {
         _id
         serial
         secret
@@ -157,7 +157,7 @@ it('should get a single product and a all its consumption (sorted by date) if li
   const product = await Product.findOne({serial});
   const query = `
     query {
-      product(serial: "${serial}", token: "${token}") {
+      product(serial: "${serial}", secret: "${secret}") {
         _id
         serial
         secret

@@ -22,7 +22,7 @@ const typeDefs = `
   }
   type Query {
     consumptions: [Consumption]
-    product(serial: String!, token: String!): Product
+    product(serial: String!, secret: String!): Product
   }
   type Mutation {
     login(email: String!, password: String!): Token
