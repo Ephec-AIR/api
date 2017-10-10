@@ -14,7 +14,7 @@ async function login(req, res) {
       username: req.body.username, password: req.body.password
     })
   });
-  
+
   const data = await response.json();
 
   if (response.status != 200) {
@@ -48,6 +48,7 @@ async function sync(req, res) {
   }
 
   User.findOne({userId: res.user.userId}).serial = serial;
+  // regenerate jwt
   res.status(200).json(pro);
 }
 
