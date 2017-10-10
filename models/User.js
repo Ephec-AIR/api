@@ -26,6 +26,7 @@ UserSchema.pre('findOne', autopopulate);
 UserSchema.methods.generateJWT = function(username) {
   return jwt.sign({
       userId: this.userId,
+      serial: this.serial || null,
       username
   }, JWT_SECRET, {
     expiresIn: '1day',
