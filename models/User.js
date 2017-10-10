@@ -11,6 +11,10 @@ const UserSchema = new mongoose.Schema({
   serial: {
     type: String,
     ref: 'Product'
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -26,6 +30,7 @@ UserSchema.pre('findOne', autopopulate);
 UserSchema.methods.generateJWT = function(username) {
   return jwt.sign({
       userId: this.userId,
+      isAdmin: this.isAdmin,
       serial: this.serial || null,
       username
   }, JWT_SECRET, {

@@ -34,22 +34,26 @@ async function login(req, res) {
 }
 
 async function sync(req, res) {
-  const {user_secret, serial} = req.body;
-  const pro = Product.findOne({serial});
+  const {serial, user_secret} = req.body;
+  const product = Product.findOne({serial});
 
-  if (!pro) {
+  if (!product) {
     res.status(404).end();
     return;
   }
 
-  if (pro.user_secret !== user_secret) {
+  if (product.user_secret !== user_secret) {
     res.status(403).end();
     return
   }
 
-  User.findOne({userId: res.user.userId}).serial = serial;
+  const user = await User.findOne({userId: req.user.userId});
+  user.serial = serial;
+  await user.save();
+
   // regenerate jwt
-  res.status(200).json(pro);
+  const token = user.generateJWT(req.user.username);
+  res.status(200).json({token});
 }
 
 module.exports = {

@@ -4,16 +4,18 @@ const Consumption = require('../models/Consumption');
 
 async function add(req, res) {
   const {ocr_secret, serial, value} = req.body;
-
   const pro = await Product.findOne({serial});
+
   if (!pro) {
     res.status(404).end();
     return;
   }
+
   if (pro.ocr_secret != ocr_secret) {
     res.status(403).end();
     return;
   }
+
   if (!pro.isActive) {
     res.status(402).end();
     return;
@@ -38,6 +40,6 @@ async function get(req, res) {
 }
 
 module.exports = {
-  add,
-  get
+  addConsumtion: add,
+  getConsumption: get
 };
