@@ -4,7 +4,6 @@ const Product = require('../models/Product');
 const BASE_URL = 'https://air.ephec-ti.org/forum';
 
 async function login(req, res) {
-  console.log(req.body.password);
   const response = await fetch(`${BASE_URL}/api/ns/login`, {
     method: 'POST',
     headers: {

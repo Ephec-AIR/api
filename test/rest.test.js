@@ -31,7 +31,7 @@ async function generateProduct() {
   const serial = uuid();
   const ocr_secret = (await promisify(crypto.randomBytes)(20)).toString('hex');
   const user_secret = (await promisify(crypto.randomBytes)(12)).toString('hex');
-  const product = new Product({serial, ocr_secret, user_secret});
+  const product = await new Product({serial, ocr_secret, user_secret}).save();
   return product;
 }
 
@@ -83,12 +83,11 @@ describe('product creation [admin]', () => {
     await user.save();
     // get admin token
     const adminToken = await logUser();
+    console.log(adminToken);
 
     const response = await request(app)
       .post('/product')
       .set('authorization', `Bearer ${adminToken}`);
-
-    expect(response.body).toMatchSnapshot();
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual(expect.objectContaining({
@@ -143,17 +142,27 @@ describe('product update [user]', () => {
 });
 
 describe('sync product [user]', () => {
-  it('should send a status 500 if serial is not provided', async () => {
-    return request(app).post('/sync').send({user_secret: fakeUserSecret}).expect(500);
-  });
-
-  it('should send a status 500 if user_secret is not provided', async () => {
-    return request(app).post('/sync').send({serial: fakeSerial}).expect(500);
-  });
-
   it('should not sync product with user if the user is not connected (no jwt provided)', async () => {
     const product = await generateProduct();
     return request(app).post('/sync').send({serial: product.serial, user_secret: product.user_secret}).expect(401);
+  });
+
+  it('should send a status 500 if serial is not provided', async () => {
+    const token = await logUser();
+    return request(app)
+      .post('/sync')
+      .set('authorization', `Bearer ${token}`)
+      .send({user_secret: fakeUserSecret})
+      .expect(500);
+  });
+
+  it('should send a status 500 if user_secret is not provided', async () => {
+    const token = await logUser();
+    return request(app)
+      .post('/sync')
+      .set('authorization', `Bearer ${token}`)
+      .send({serial: fakeSerial})
+      .expect(500);
   });
 
   it('should not sync product with user if the product does not exist', async () => {
@@ -176,6 +185,7 @@ describe('sync product [user]', () => {
 
   it('should sync product with user if secret and ocr_secret is ok', async () => {
     const token = await logUser();
+    console.log(token);
     const product = await generateProduct();
     const response = await request(app)
       .post('/sync')
@@ -196,6 +206,7 @@ describe('add consumption [ocr]', () => {
   it('should send a statuts 500 if ocr_secret is not provided', async () => {
     return request(app)
       .put('/consumption')
+      .set('authorization', `Bearer ${token}`)
       .send({
         serial: fakeSerial,
         value: 350
@@ -206,6 +217,7 @@ describe('add consumption [ocr]', () => {
   it('should send a statuts 500 if serial is not provided', async () => {
     return request(app)
       .put('/consumption')
+      .set('authorization', `Bearer ${token}`)
       .send({
         ocr_secret: fakeOcrSecret,
         value: 350

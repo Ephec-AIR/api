@@ -23,7 +23,7 @@ app.use(validator());
 // REST
 app.post('/login', validateLogin, catchErrors(login));
 app.post('/sync', jwt, validateSync, catchErrors(sync));
-app.put('/consumption', jwt, validateAddConsumption, catchErrors(ocr), catchErrors(addConsumtion));
+app.put('/consumption', catchErrors(ocr), validateAddConsumption, catchErrors(addConsumtion));
 app.get('/consumption', jwt, catchErrors(getConsumption));
 app.post('/product', jwt, admin, catchErrors(createProduct));
 app.put('/product', jwt, catchErrors(setPostalCode));
