@@ -37,7 +37,6 @@ async function generateProduct() {
 
 async function logUser() {
   const response = await request(app).post('/login').send({username, password});
-  console.log(response.body);
   return response.body.token
 }
 
@@ -50,7 +49,9 @@ describe('authentication [user]', () => {
     const response = await request(app).post('/login').send({username, password});
 
     expect(response.statusCode).toBe(200);
-    expect(response.body).toHaveProperty(token);
+    expect(response.body).toEqual({
+      token: expect.any(String)
+    });
     expect(await decodeToken(response.body.token)).toEqual(expect.objectContaining({
       userId: expect.any(String),
       isAdmin: false,
@@ -67,7 +68,7 @@ describe('authentication [user]', () => {
     return request(app).post('/login').send({username}).expect(500);
   });
 
-  it('should send a status 403 if no username or password is wrong', async () => {
+  it('should send a status 403 if username or/and password is wrong', async () => {
     return request(app).post('/login').send({username: 'Jean-Luc', password: 'Muteba'}).expect(403);
   });
 });
@@ -81,11 +82,13 @@ describe('product creation [admin]', () => {
     user.isAdmin = true;
     await user.save();
     // get admin token
-    const adminToken = (await request(app).post('/login').send({username, password})).body.token;
+    const adminToken = await logUser();
 
     const response = await request(app)
       .post('/product')
       .set('authorization', `Bearer ${adminToken}`);
+
+    expect(response.body).toMatchSnapshot();
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual(expect.objectContaining({
@@ -123,6 +126,7 @@ describe('product update [user]', () => {
   it('should update the product', async () => {
     const token = await logUser();
     const product = await generateProduct();
+    console.log(token);
     // link user to product
     const response = await request(app)
       .post('/sync')
