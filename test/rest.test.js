@@ -71,7 +71,9 @@ describe('authentication [user]', () => {
   });
 
   it('should send a status 403 if username or/and password is wrong', async () => {
-    return request(app).post('/login').send({username: 'Jean-Luc', password: 'Muteba'}).expect(403);
+    const response = await request(app).post('/login').send({username: 'Jean-Luc', password: 'Muteba'});
+    console.log(response.status, response.body);
+    expect(response.status).toBe(403);
   });
 });
 
@@ -80,11 +82,12 @@ describe('product creation [admin]', () => {
     // get userId
     //const userId = (await decodeToken((await logUser()))).userId;
     // make user admin
+    console.log(userId);
     const user = await User.findOne({userId});
     user.isAdmin = true;
-    await user.save();
+    const admin = await user.save();
     // get admin token
-    const adminToken = user.generateJWT(username);
+    const adminToken = admin.generateJWT(username);
 
     const response = await request(app)
       .post('/product')
@@ -116,7 +119,7 @@ describe('product update [user]', () => {
   });
 
   it('should not update the product if the user is not sync with a product (no serial linked to user)', async () => {
-    const user = User.findOne({userId});
+    const user = await User.findOne({userId});
     const token = user.generateJWT(username);
     return request(app)
       .put('/product')
@@ -125,7 +128,7 @@ describe('product update [user]', () => {
   });
 
   it('should update the product', async () => {
-    const user = User.findOne({userId});
+    const user = await User.findOne({userId});
     const token = user.generateJWT(username);
     const product = await generateProduct();
 
@@ -151,7 +154,7 @@ describe('sync product [user]', () => {
   });
 
   it('should send a status 500 if serial is not provided', async () => {
-    const user = User.findOne({userId});
+    const user = await User.findOne({userId});
     const token = user.generateJWT(username);
     return request(app)
       .post('/sync')
@@ -161,7 +164,7 @@ describe('sync product [user]', () => {
   });
 
   it('should send a status 500 if user_secret is not provided', async () => {
-    const user = User.findOne({userId});
+    const user = await User.findOne({userId});
     const token = user.generateJWT(username);
     return request(app)
       .post('/sync')
@@ -171,7 +174,7 @@ describe('sync product [user]', () => {
   });
 
   it('should not sync product with user if the product does not exist', async () => {
-    const user = User.findOne({userId});
+    const user = await User.findOne({userId});
     const token = user.generateJWT(username);
     const product = await generateProduct();
     return request(app)
@@ -181,7 +184,7 @@ describe('sync product [user]', () => {
   });
 
   it('should not sync product with user if user_secret is not associated with the product', async () => {
-    const user = User.findOne({userId});
+    const user = await User.findOne({userId});
     const token = user.generateJWT(username);
     const product = await generateProduct();
     return request(app)
@@ -191,7 +194,7 @@ describe('sync product [user]', () => {
   });
 
   it('should sync product with user if secret and ocr_secret is ok', async () => {
-    const user = User.findOne({userId});
+    const user = await User.findOne({userId});
     const token = user.generateJWT(username);
     const product = await generateProduct();
     const response = await request(app)
@@ -296,7 +299,7 @@ describe('get consumption [user]', () => {
   it('should get a list of consumptions if the product requested is sync with the user', async () => {
     // user should be sync with product
     // based on previous tests
-    const user = User.findOne({userId});
+    const user = await User.findOne({userId});
     const token = user.generateJWT(username);
     const response = await request(app)
       .get('/consumption')
@@ -313,12 +316,12 @@ describe('get consumption [user]', () => {
 
   it('should send a status 400 if the user is not sync with the product [no serial in jwt]', async () => {
     // unsync user with product
-    const user = User.findOne({userId});
+    const user = await User.findOne({userId});
     const token = user.generateJWT(username);
-    const userId = (await decodeToken(token)).userId;
+
     user.serial = fakeSerial;
-    await user.save();
-    const unSyncToken = await logUser();
+    const unSyncUser = await user.save();
+    const unSyncToken = unSyncUser.generateJWT(username);
 
     return request(app)
       .get('/consumption')
