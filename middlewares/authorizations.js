@@ -1,4 +1,5 @@
 const jwt = require('express-jwt');
+const Product = require('../models/Product');
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const login = jwt({
@@ -26,10 +27,25 @@ const admin = (req, res, next) => {
   next();
 }
 
-const ocr = () => {}
+const ocr = (req, res, next) => {
+  const {ocr_secret, serial} = req.body;
+  const product = await Product.findOne({serial});
 
-module.exports = (req, res, next) => {
+  if (!product) {
+    res.status(404).end();
+    return;
+  }
 
+  if (product.ocr_secret != ocr_secret) {
+    res.status(403).end();
+    return;
+  }
+
+  if (!product.isActive) {
+    res.status(402).end();
+    return;
+  }
+  next();
 }
 
 module.exports = {

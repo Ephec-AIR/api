@@ -185,45 +185,119 @@ describe('sync product', () => {
   });
 });
 
-describe('add consumption', () => {});
-describe('get consumption', () => {});
-
-it('should get a single product and its consumption'), async () => {
-  const product = await Product.findOne({serial});
-  const consumption1 = new Consumption({
-    date: new Date(2017, 10, 6, 12),
-    value: 300,
-    productId: product._id
+describe('add consumption [ocr]', () => {
+  it('should send a statuts 500 if ocr_secret is not provided', async () => {
+    return request(app)
+      .put('/consumption')
+      .send({
+        serial: fakeSerial,
+        value: 350
+      })
+      .expect(500);
   });
 
-  const consumption2 = new Consumption({
-    date: new Date(2017, 10, 6, 13),
-    value: 350,
-    productId: product._id
+  it('should send a statuts 500 if serial is not provided', async () => {
+    return request(app)
+      .put('/consumption')
+      .send({
+        ocr_secret: fakeOcrSecret,
+        value: 350
+      })
+      .expect(500);
   });
 
-  await Promise.all([
-    consumption1.save(),
-    consumption2.save()
-  ]);
-}
-
-it('should get a single product and a number of consumption (sorted by date)'), async () => {
-  const product = await Product.findOne({serial});
-  const consumption3 = new Consumption({
-    date: new Date(2017, 10, 6, 14),
-    value: 400,
-    productId: product._id
+  it('should send a statuts 500 if value is not provided', async () => {
+    return request(app)
+      .put('/consumption')
+      .send({
+        ocr_secret: fakeOcrSecret,
+        serial: fakeSerial
+      })
+      .expect(500);
   });
 
-  const consumption4 = new Consumption({
-    date: new Date(2017, 10, 6, 15),
-    value: 450,
-    productId: product._id
+  it('should send a status 404 if the product does not exist [wrong serial]', async () => {
+    return request(app)
+      .put('/consumption')
+      .send({
+        serial: fakeSerial,
+        ocr_secret: fakeOcrSecret,
+        value: 350
+      })
+      .expect(404)
   });
 
-  await Promise.all([
-    consumption3.save(),
-    consumption4.save()
-  ]);
-}
+  it('should send a status 403 if the ocr_secret is wrong', async () => {
+    const product = await generateProduct();
+    return request(app)
+      .put('/consumption')
+      .send({
+        serial: product.serial,
+        ocr_secret: fakeOcrSecret,
+        value: 350
+      })
+      .expect(403);
+  });
+
+  it('should send a status 402 if the product is disabled', async () => {
+    const product = await generateProduct();
+    product.isActive = false;
+    await product.save();
+
+    return request(app)
+      .put('/consumption')
+      .send({
+        serial: product.serial,
+        ocr_secret: product.ocr_secret,
+        value: 350
+      })
+      .expect(402);
+  });
+
+  it('should add consumption to product if everything is ok', async () => {
+    const product = await generateProduct();
+
+    return request(app)
+      .put('/consumption')
+      .send({
+        serial: product.serial,
+        ocr_secret: product.ocr_secret,
+        value: 350
+      })
+      .expect(200);
+  });
+});
+
+describe('get consumption [user]', () => {
+  it('should get a list of consumptions if the product requested is sync with the user', async () => {
+    // user should be sync with user
+    // based on previous tests
+    const token = await logUser();
+    const response = await request(app)
+      .get('/consumption')
+      .set('authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(Array.isArray(response.body)).toBe(true);
+    expect(response.body[0]).toEqual(expect.objectContaining({
+      date: expect.any(Date),
+      value: expect.any(Number),
+      serial: (await decodeToken(token)).serial
+    }));
+  });
+
+  it('should send a status 400 if the user is not sync with the product [no serial in jwt]', async () => {
+    // unsync user with product
+    const token = await logUser();
+    const userId = (await decodeToken(token)).userId;
+    const user = await User.findOne({userId});
+    user.serial = fakeSerial;
+    await user.save();
+    const unSyncToken = await logUser();
+
+    return request(app)
+      .get('/consumption')
+      .set('authorization', `Bearer ${unSyncToken}`)
+      .expect(400);
+  });
+});

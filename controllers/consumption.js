@@ -3,24 +3,7 @@ const Product = require('../models/Product');
 const Consumption = require('../models/Consumption');
 
 async function add(req, res) {
-  const {ocr_secret, serial, value} = req.body;
-  const pro = await Product.findOne({serial});
-
-  if (!pro) {
-    res.status(404).end();
-    return;
-  }
-
-  if (pro.ocr_secret != ocr_secret) {
-    res.status(403).end();
-    return;
-  }
-
-  if (!pro.isActive) {
-    res.status(402).end();
-    return;
-  }
-
+  const {serial, value} = req.body;
   const cons = {
     date: new Date(),
     serial,

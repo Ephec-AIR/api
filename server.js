@@ -6,7 +6,7 @@ const validator = require('express-validator');
 const cookieParser = require('cookie-parser');
 const catchErrors = require('./middlewares/errors');
 const {jwt, admin, ocr} = require('./middlewares/authorizations');
-const {validateLogin, validateSync} = require('./middlewares/validators');
+const {validateLogin, validateSync, validateAddConsumption} = require('./middlewares/validator');
 const {login, sync} = require('./controllers/auth');
 const {addConsumtion, getConsumption} = require('./controllers/consumption');
 const {createProduct, setPostalCode} = require('./controllers/product');
@@ -22,9 +22,9 @@ app.use(validator());
 
 // REST
 app.post('/login', validateLogin, catchErrors(login));
-app.post('/sync', validateSync, jwt, catchErrors(sync));
-app.put('/consumption', catchErrors(addConsumtion));
-app.get('/consumption', catchErrors(getConsumption));
+app.post('/sync', jwt, validateSync, catchErrors(sync));
+app.put('/consumption', jwt, validateAddConsumption, ocr, catchErrors(addConsumtion));
+app.get('/consumption', jwt, catchErrors(getConsumption));
 app.post('/product', jwt, admin, catchErrors(createProduct));
 app.put('/product', jtw, catchErrors(setPostalCode));
 
