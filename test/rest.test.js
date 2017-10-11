@@ -72,7 +72,6 @@ describe('authentication [user]', () => {
 
   it('should send a status 403 if username or/and password is wrong', async () => {
     const response = await request(app).post('/login').send({username: 'Jean-Luc', password: 'Muteba'});
-    console.log(response.status, response.body);
     expect(response.status).toBe(403);
   });
 });
@@ -82,7 +81,6 @@ describe('product creation [admin]', () => {
     // get userId
     //const userId = (await decodeToken((await logUser()))).userId;
     // make user admin
-    console.log(userId);
     const user = await User.findOne({userId});
     user.isAdmin = true;
     const admin = await user.save();
@@ -139,7 +137,7 @@ describe('product update [user]', () => {
       .set('authorization', `Bearer ${token}`)
       .send({serial: product.serial, user_secret: product.user_secret});
 
-    console.logUser(response.body.token);
+    console.log(response.body.token);
     return request(app)
       .put('/product')
       .set('authorization', `Bearer ${response.body.token}`)
