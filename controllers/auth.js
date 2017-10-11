@@ -15,12 +15,13 @@ async function login(req, res) {
     })
   });
 
-  const data = await response.json();
-
   if (response.status != 200) {
-    res.status(403).send(data);
+    // stream response
+    response.body.pipe(res);
     return;
   }
+
+  const data = await response.json();
 
   let user = await User.findOne({userId: data.uid});
   // if user does not exist in MONGODB, create it.
