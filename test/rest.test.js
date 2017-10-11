@@ -18,7 +18,7 @@ const password = process.env.PASSWORD;
 const fakeSerial = casual.uuid;
 const fakeOcrSecret = "dab035674b6e91e2395b471b4cdf6bba558580bb";
 const fakeUserSecret = "e4bc2b6b236d143bd51522c0";
-let serial, user_secret;
+let token = null;
 
 function decodeToken(token) {
   return new Promise(resolve => {
@@ -35,10 +35,13 @@ async function generateProduct() {
   return product;
 }
 
-async function logUser() {
-  const response = await request(app).post('/login').send({username, password});
-  console.log(response.body);
-  return response.body.token
+async function logUser(role='user') {
+  if (!token || role === 'admin') {
+    const response = await request(app).post('/login').send({username, password});
+    token = response.body.token;
+  }
+  console.log(token);
+  return token;
 }
 
 beforeAll(() => {
@@ -83,7 +86,7 @@ describe('product creation [admin]', () => {
     user.isAdmin = true;
     await user.save();
     // get admin token
-    const adminToken = await logUser();
+    const adminToken = await logUser('admin');
 
     const response = await request(app)
       .post('/product')
