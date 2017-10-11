@@ -18,7 +18,7 @@ const password = process.env.PASSWORD;
 const fakeSerial = casual.uuid;
 const fakeOcrSecret = "dab035674b6e91e2395b471b4cdf6bba558580bb";
 const fakeUserSecret = "e4bc2b6b236d143bd51522c0";
-let token = null;
+let userId = null;
 
 function decodeToken(token) {
   return new Promise(resolve => {
@@ -36,12 +36,8 @@ async function generateProduct() {
 }
 
 async function logUser(role='user') {
-  if (!token || role === 'admin') {
-    const response = await request(app).post('/login').send({username, password});
-    token = response.body.token;
-  }
-  console.log(token);
-  return token;
+  const response = await request(app).post('/login').send({username, password});
+  userId = (await decodeToken(response.body.token)).userId;
 }
 
 beforeAll(() => {
@@ -51,12 +47,14 @@ beforeAll(() => {
 describe('authentication [user]', () => {
   it('should login a user who has an account on the forum', async () => {
     const response = await request(app).post('/login').send({username, password});
+    const decodedToken = await decodeToken(response.body.token);
+    userId = decodedToken.userId;
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual({
       token: expect.any(String)
     });
-    expect(await decodeToken(response.body.token)).toEqual(expect.objectContaining({
+    expect(decodedToken).toEqual(expect.objectContaining({
       userId: expect.any(String),
       isAdmin: false,
       serial: null,
@@ -80,13 +78,13 @@ describe('authentication [user]', () => {
 describe('product creation [admin]', () => {
   it('should only allow an admin to add a product', async () => {
     // get userId
-    const userId = (await decodeToken((await logUser()))).userId;
+    //const userId = (await decodeToken((await logUser()))).userId;
     // make user admin
     const user = await User.findOne({userId});
     user.isAdmin = true;
     await user.save();
     // get admin token
-    const adminToken = await logUser('admin');
+    const adminToken = user.generateJWT(username);
 
     const response = await request(app)
       .post('/product')
@@ -118,7 +116,8 @@ describe('product update [user]', () => {
   });
 
   it('should not update the product if the user is not sync with a product (no serial linked to user)', async () => {
-    const token = await logUser();
+    const user = User.findOne({userId});
+    const token = user.generateJWT(username);
     return request(app)
       .put('/product')
       .set('authorization', `Bearer ${token}`)
@@ -126,7 +125,8 @@ describe('product update [user]', () => {
   });
 
   it('should update the product', async () => {
-    const token = await logUser();
+    const user = User.findOne({userId});
+    const token = user.generateJWT(username);
     const product = await generateProduct();
 
     // link user to product
@@ -151,7 +151,8 @@ describe('sync product [user]', () => {
   });
 
   it('should send a status 500 if serial is not provided', async () => {
-    const token = await logUser();
+    const user = User.findOne({userId});
+    const token = user.generateJWT(username);
     return request(app)
       .post('/sync')
       .set('authorization', `Bearer ${token}`)
@@ -160,7 +161,8 @@ describe('sync product [user]', () => {
   });
 
   it('should send a status 500 if user_secret is not provided', async () => {
-    const token = await logUser();
+    const user = User.findOne({userId});
+    const token = user.generateJWT(username);
     return request(app)
       .post('/sync')
       .set('authorization', `Bearer ${token}`)
@@ -169,7 +171,8 @@ describe('sync product [user]', () => {
   });
 
   it('should not sync product with user if the product does not exist', async () => {
-    const token = await logUser();
+    const user = User.findOne({userId});
+    const token = user.generateJWT(username);
     const product = await generateProduct();
     return request(app)
       .post('/sync')
@@ -178,7 +181,8 @@ describe('sync product [user]', () => {
   });
 
   it('should not sync product with user if user_secret is not associated with the product', async () => {
-    const token = await logUser();
+    const user = User.findOne({userId});
+    const token = user.generateJWT(username);
     const product = await generateProduct();
     return request(app)
       .post('/sync')
@@ -187,7 +191,8 @@ describe('sync product [user]', () => {
   });
 
   it('should sync product with user if secret and ocr_secret is ok', async () => {
-    const token = await logUser();
+    const user = User.findOne({userId});
+    const token = user.generateJWT(username);
     const product = await generateProduct();
     const response = await request(app)
       .post('/sync')
@@ -289,9 +294,10 @@ describe('add consumption [ocr]', () => {
 
 describe('get consumption [user]', () => {
   it('should get a list of consumptions if the product requested is sync with the user', async () => {
-    // user should be sync with user
+    // user should be sync with product
     // based on previous tests
-    const token = await logUser();
+    const user = User.findOne({userId});
+    const token = user.generateJWT(username);
     const response = await request(app)
       .get('/consumption')
       .set('authorization', `Bearer ${token}`);
@@ -307,7 +313,8 @@ describe('get consumption [user]', () => {
 
   it('should send a status 400 if the user is not sync with the product [no serial in jwt]', async () => {
     // unsync user with product
-    const token = await logUser();
+    const user = User.findOne({userId});
+    const token = user.generateJWT(username);
     const userId = (await decodeToken(token)).userId;
     const user = await User.findOne({userId});
     user.serial = fakeSerial;
