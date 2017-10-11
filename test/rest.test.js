@@ -316,7 +316,6 @@ describe('get consumption [user]', () => {
     const user = User.findOne({userId});
     const token = user.generateJWT(username);
     const userId = (await decodeToken(token)).userId;
-    const user = await User.findOne({userId});
     user.serial = fakeSerial;
     await user.save();
     const unSyncToken = await logUser();
