@@ -83,7 +83,6 @@ describe('product creation [admin]', () => {
     await user.save();
     // get admin token
     const adminToken = await logUser();
-    console.log(adminToken);
 
     const response = await request(app)
       .post('/product')
@@ -206,7 +205,6 @@ describe('add consumption [ocr]', () => {
   it('should send a statuts 500 if ocr_secret is not provided', async () => {
     return request(app)
       .put('/consumption')
-      .set('authorization', `Bearer ${token}`)
       .send({
         serial: fakeSerial,
         value: 350
@@ -217,7 +215,6 @@ describe('add consumption [ocr]', () => {
   it('should send a statuts 500 if serial is not provided', async () => {
     return request(app)
       .put('/consumption')
-      .set('authorization', `Bearer ${token}`)
       .send({
         ocr_secret: fakeOcrSecret,
         value: 350
