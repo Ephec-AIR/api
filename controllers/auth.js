@@ -21,7 +21,6 @@ async function login(req, res) {
   }
 
   const data = await response.json();
-
   let user = await User.findOne({userId: data.uid});
   // if user does not exist in MONGODB, create it.
   if (!user) {

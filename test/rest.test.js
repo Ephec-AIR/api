@@ -15,7 +15,7 @@ const Consumption = require('../models/Consumption');
 
 const username = process.env.USER;
 const password = process.env.PASSWORD;
-const fakeSerial = "e2d36-022e2-ab182-f42e2-806fa";
+const fakeSerial = casual.uuid;
 const fakeOcrSecret = "dab035674b6e91e2395b471b4cdf6bba558580bb";
 const fakeUserSecret = "e4bc2b6b236d143bd51522c0";
 let serial, user_secret;
@@ -37,6 +37,7 @@ async function generateProduct() {
 
 async function logUser() {
   const response = await request(app).post('/login').send({username, password});
+  console.log(response.body);
   return response.body.token
 }
 
@@ -124,7 +125,7 @@ describe('product update [user]', () => {
   it('should update the product', async () => {
     const token = await logUser();
     const product = await generateProduct();
-    console.log(token);
+
     // link user to product
     const response = await request(app)
       .post('/sync')
@@ -184,7 +185,6 @@ describe('sync product [user]', () => {
 
   it('should sync product with user if secret and ocr_secret is ok', async () => {
     const token = await logUser();
-    console.log(token);
     const product = await generateProduct();
     const response = await request(app)
       .post('/sync')

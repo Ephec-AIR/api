@@ -7,7 +7,7 @@ const ProductSchema = new mongoose.Schema({
     lowercase: true,
     unique: true
   },
-  user_secret: { // shared secret (no hash!)
+  user_secret: { // 12 bytes string
     type: String,
     required: 'please supply a secret'
   },
@@ -16,8 +16,7 @@ const ProductSchema = new mongoose.Schema({
     required: 'please supply a token'
   },
   postalCode: {
-    type: Number,
-    required: 'please supply a postal code'
+    type: Number
   },
   isActive: {
     type: Boolean,
