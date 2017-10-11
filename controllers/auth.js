@@ -36,7 +36,7 @@ async function sync(req, res) {
   const {serial, user_secret} = req.body;
   console.log(serial, user_secret);
   console.log(await Product.find({}));
-  const product = Product.findOne({serial});
+  const product = await Product.findOne({serial});
   console.log('SERIAL', product.serial)
 
   if (!product) {
