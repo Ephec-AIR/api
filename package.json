@@ -1,7 +1,7 @@
 {
   "name": "air-api",
   "version": "1.0.0",
-  "description": "graphql api for A.I.R.",
+  "description": "REST api for AIR",
   "main": "server.js",
   "scripts": {
     "test": "jest test",
@@ -15,33 +15,27 @@
   "keywords": [
     "air"
   ],
-  "author": "Mathieu-R",
+  "author": "Mathieu-R & Julien C.",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Ephec-AIR/api/issues"
   },
   "homepage": "https://github.com/Ephec-AIR/api#readme",
   "dependencies": {
-    "apollo-server-express": "^1.1.2",
     "bcrypt": "^1.0.3",
     "cookie-parser": "^1.4.3",
     "dotenv": "^4.0.0",
     "express": "^4.16.1",
     "express-jwt": "^5.3.0",
     "express-validator": "^4.2.1",
-    "graphql": "^0.11.6",
-    "graphql-iso-date": "^3.3.0",
-    "graphql-tools": "^1.2.3",
     "jsonwebtoken": "^8.0.1",
     "mongoose": "^4.11.14",
     "node-fetch": "^1.7.3",
-    "passport": "^0.4.0",
-    "passport-local": "^1.0.0",
+    "uuid": "^3.1.0",
     "validator": "^9.0.0"
   },
   "devDependencies": {
     "casual": "^1.5.17",
-    "graphql-tester": "0.0.5",
     "jest": "^21.2.1",
     "supertest": "^3.0.0"
   }

@@ -27,7 +27,7 @@ const admin = (req, res, next) => {
   next();
 }
 
-const ocr = (req, res, next) => {
+const ocr = async (req, res, next) => {
   const {ocr_secret, serial} = req.body;
   const product = await Product.findOne({serial});
 

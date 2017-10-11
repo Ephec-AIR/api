@@ -23,7 +23,7 @@ function validateSync(req, res, next) {
 function validateAddConsumption(req, res, next) {
   req.checkBody('ocr_secret', "L'ocr_secret est manquant.").notEmpty();
   req.checkBody('serial', 'Le serial est manquant.').notEmpty();
-  req.checkBody('value', 'Le valeur de consommation est manquante.').notEmpty();
+  req.checkBody('value', 'La valeur de consommation est manquante.').notEmpty();
 
   const errors = req.validationErrors();
   if (errors) {

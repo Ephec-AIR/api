@@ -1,5 +1,5 @@
 const {promisify} = require('util');
-const server = require('../server');
+const app = require('../server');
 const request = require('supertest');
 const casual = require('casual'); // fake data
 const jwt = require('jsonwebtoken');
@@ -13,8 +13,8 @@ const Product = require('../models/Product');
 const User = require('../models/User');
 const Consumption = require('../models/Consumption');
 
-const username = process.env.USR;
-const password = process.env.PWD;
+const username = process.env.USER;
+const password = process.env.PASSWORD;
 const fakeSerial = "e2d36-022e2-ab182-f42e2-806fa";
 const fakeOcrSecret = "dab035674b6e91e2395b471b4cdf6bba558580bb";
 const fakeUserSecret = "e4bc2b6b236d143bd51522c0";
@@ -37,6 +37,7 @@ async function generateProduct() {
 
 async function logUser() {
   const response = await request(app).post('/login').send({username, password});
+  console.log(response.body);
   return response.body.token
 }
 
@@ -44,7 +45,7 @@ beforeAll(() => {
   return cleanDB();
 });
 
-describe('authentication', () => {
+describe('authentication [user]', () => {
   it('should login a user who has an account on the forum', async () => {
     const response = await request(app).post('/login').send({username, password});
 
@@ -71,12 +72,13 @@ describe('authentication', () => {
   });
 });
 
-describe('product creation', () => {
+describe('product creation [admin]', () => {
   it('should only allow an admin to add a product', async () => {
     // get userId
     const userId = (await decodeToken((await logUser()))).userId;
     // make user admin
-    const user = (await User.findOne({userId})).isAdmin = true;
+    const user = await User.findOne({userId});
+    user.isAdmin = true;
     await user.save();
     // get admin token
     const adminToken = (await request(app).post('/login').send({username, password})).body.token;
@@ -105,7 +107,7 @@ describe('product creation', () => {
   });
 });
 
-describe('product update', () => {
+describe('product update [user]', () => {
   it('should not update the product if the user is not connected (no jwt provided)', async () => {
     return request(app).put('/product').expect(401);
   });
@@ -131,11 +133,12 @@ describe('product update', () => {
     return request(app)
       .put('/product')
       .set('authorization', `Bearer ${response.body.token}`)
-      .send({postalCode: '77777'}).expect(200);
+      .send({postalCode: '77777'})
+      .expect(200);
   });
 });
 
-describe('sync product', () => {
+describe('sync product [user]', () => {
   it('should send a status 500 if serial is not provided', async () => {
     return request(app).post('/sync').send({user_secret: fakeUserSecret}).expect(500);
   });
