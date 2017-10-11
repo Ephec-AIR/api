@@ -34,8 +34,9 @@ async function login(req, res) {
 
 async function sync(req, res) {
   const {serial, user_secret} = req.body;
+  console.log(serial);
+  console.log(await Product.find({}));
   const product = Product.findOne({serial});
-  console.log(serial, user_secret);
 
   if (!product) {
     console.log('product not found');

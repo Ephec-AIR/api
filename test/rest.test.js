@@ -198,7 +198,6 @@ describe('sync product [user]', () => {
     const user = await User.findOne({userId});
     const token = user.generateJWT(username);
     const product = await generateProduct();
-    console.log(product.serial, product.user_secret);
     const response = await request(app)
       .post('/sync')
       .set('authorization', `Bearer ${token}`)
