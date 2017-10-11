@@ -60,16 +60,12 @@ describe('authentication [user]', () => {
     }));
   });
 
-  it('should send a status 400 if nor username nor password are provided', async() => {
-    return request(app).post("/login").send().expect(400);
-  })
-
-  it('should send a status 400 if no username is provided', async () => {
-    return request(app).post('/login').send({password}).expect(400);
+  it('should send a status 500 if no username is provided', async () => {
+    return request(app).post('/login').send({password}).expect(500);
   });
 
-  it('should send a status 400 if no password is provided', async () => {
-    return request(app).post('/login').send({username}).expect(400);
+  it('should send a status 500 if no password is provided', async () => {
+    return request(app).post('/login').send({username}).expect(500);
   });
 
   it('should send a status 403 if username or/and password is wrong', async () => {
