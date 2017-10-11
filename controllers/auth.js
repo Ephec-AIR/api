@@ -35,14 +35,16 @@ async function login(req, res) {
 async function sync(req, res) {
   const {serial, user_secret} = req.body;
   const product = Product.findOne({serial});
-  console.log(serial, user_secret, product);
+  console.log(serial, user_secret);
 
   if (!product) {
+    console.log('product not found');
     res.status(404).end();
     return;
   }
 
   if (product.user_secret !== user_secret) {
+    console.log('user secret invalid')
     res.status(403).end();
     return
   }
