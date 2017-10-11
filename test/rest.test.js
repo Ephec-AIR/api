@@ -132,13 +132,14 @@ describe('product update [user]', () => {
     const token = user.generateJWT(username);
     const product = await generateProduct();
 
+    console.log(token);
     // link user to product
     const response = await request(app)
       .post('/sync')
       .set('authorization', `Bearer ${token}`)
       .send({serial: product.serial, user_secret: product.user_secret});
 
-    // expect status 200
+    console.logUser(response.body.token);
     return request(app)
       .put('/product')
       .set('authorization', `Bearer ${response.body.token}`)
@@ -300,6 +301,7 @@ describe('get consumption [user]', () => {
     // user should be sync with product
     // based on previous tests
     const user = await User.findOne({userId});
+    console.log(user.serial);
     const token = user.generateJWT(username);
     const response = await request(app)
       .get('/consumption')
@@ -319,7 +321,7 @@ describe('get consumption [user]', () => {
     const user = await User.findOne({userId});
     const token = user.generateJWT(username);
 
-    user.serial = fakeSerial;
+    user.serial = null;
     const unSyncUser = await user.save();
     const unSyncToken = unSyncUser.generateJWT(username);
 
