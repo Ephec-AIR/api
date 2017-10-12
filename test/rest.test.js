@@ -130,14 +130,12 @@ describe('product update [user]', () => {
     const token = user.generateJWT(username);
     const product = await generateProduct();
 
-    console.log(token);
     // link user to product
     const response = await request(app)
       .post('/sync')
       .set('authorization', `Bearer ${token}`)
       .send({serial: product.serial, user_secret: product.user_secret});
 
-    console.log(response.body.token);
     return request(app)
       .put('/product')
       .set('authorization', `Bearer ${response.body.token}`)
@@ -149,10 +147,12 @@ describe('product update [user]', () => {
 describe('sync product [user]', () => {
   it('should not sync product with user if the user is not connected (no jwt provided)', async () => {
     const product = await generateProduct();
+    console.log(product);
     return request(app).post('/sync').send({serial: product.serial, user_secret: product.user_secret}).expect(401);
   });
 
   it('should send a status 500 if serial is not provided', async () => {
+    console.log(fakeUserSecret);
     const user = await User.findOne({userId});
     const token = user.generateJWT(username);
     return request(app)
