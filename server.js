@@ -21,6 +21,7 @@ app.use(cookieParser()); // à voir si on en a besoin
 app.use(validator());
 
 // REST
+app.get('/health', (req, res) => res.send('server ok.'));
 app.post('/login', validateLogin, catchErrors(login));
 app.post('/sync', jwt, validateSync, catchErrors(sync));
 app.put('/consumption', validateAddConsumption, catchErrors(ocr), catchErrors(addConsumtion));
