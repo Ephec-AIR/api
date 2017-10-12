@@ -1,6 +1,4 @@
 const mongoose = require('../mongoose');
-const validator = require('validator');
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -10,26 +8,29 @@ const UserSchema = new mongoose.Schema({
     required: 'please supply a userId',
     unique: true
   },
-  productId: {
-    type: mongoose.Schema.Types.ObjectId,
+  serial: {
+    type: String,
     ref: 'Product'
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false
   }
 });
 
 function autopopulate(next) {
-  this.populate('productId');
+  this.populate('serial');
   next();
 }
 
 UserSchema.index({userId: 1}, {unique: true});
-UserSchema.pre('find', autopopulate);
-UserSchema.pre('findOne', autopopulate);
 
 UserSchema.methods.generateJWT = function(username) {
   return jwt.sign({
       userId: this.userId,
-      username,
-      productId: this.productId
+      isAdmin: this.isAdmin,
+      serial: this.serial || null,
+      username
   }, JWT_SECRET, {
     expiresIn: '1day',
     subject: 'air'

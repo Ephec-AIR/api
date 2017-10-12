@@ -10,20 +10,17 @@ const ConsumptionSchema = new mongoose.Schema({
     type: Number,
     required: 'please supply a consumption value'
   },
-  productId: {
-    type: mongoose.Schema.Types.ObjectId,
+  serial: {
+    type: String,
     ref: 'Product',
     required: 'please supply a product-key'
   }
 });
 
 function autopopulate(next) {
-  this.populate('productId');
+  this.populate('serial');
   next();
 }
-
-//ConsumptionSchema.pre('find', autopopulate);
-//ConsumptionSchema.pre('findOne', autopopulate);
 
 const Consumption = mongoose.model('Consumption', ConsumptionSchema);
 module.exports = Consumption;
