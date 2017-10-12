@@ -24,8 +24,6 @@ function autopopulate(next) {
 }
 
 UserSchema.index({userId: 1}, {unique: true});
-UserSchema.pre('find', autopopulate);
-UserSchema.pre('findOne', autopopulate);
 
 UserSchema.methods.generateJWT = function(username) {
   return jwt.sign({

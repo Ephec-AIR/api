@@ -147,12 +147,10 @@ describe('product update [user]', () => {
 describe('sync product [user]', () => {
   it('should not sync product with user if the user is not connected (no jwt provided)', async () => {
     const product = await generateProduct();
-    console.log(product);
     return request(app).post('/sync').send({serial: product.serial, user_secret: product.user_secret}).expect(401);
   });
 
   it('should send a status 500 if serial is not provided', async () => {
-    console.log(fakeUserSecret);
     const user = await User.findOne({userId});
     const token = user.generateJWT(username);
     return request(app)
