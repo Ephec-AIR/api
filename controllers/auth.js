@@ -16,7 +16,7 @@ async function login(req, res) {
 
   if (response.status != 200) {
     // stream response
-    response.body.pipe(res);
+    response.body.pipe(res).status(response.status);
     return;
   }
 
@@ -34,19 +34,14 @@ async function login(req, res) {
 
 async function sync(req, res) {
   const {serial, user_secret} = req.body;
-  //console.log(serial, user_secret);
-  //console.log(await Product.find({}));
   const product = await Product.findOne({serial});
-  //console.log('SERIAL', product.serial)
 
   if (!product) {
-    //console.log('product not found');
     res.status(404).end();
     return;
   }
 
   if (product.user_secret !== user_secret) {
-    //console.log('user secret invalid')
     res.status(403).end();
     return
   }

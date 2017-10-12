@@ -297,7 +297,6 @@ describe('get consumption [user]', () => {
     // user should be sync with product
     // based on previous tests
     const user = await User.findOne({userId});
-    console.log(user.serial);
     const token = user.generateJWT(username);
     const response = await request(app)
       .get('/consumption')
