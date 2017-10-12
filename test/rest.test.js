@@ -298,6 +298,21 @@ describe('get consumption [user]', () => {
     // based on previous tests
     const user = await User.findOne({userId});
     const token = user.generateJWT(username);
+    const product = await generateProduct();
+
+    // sync
+    await request(app)
+      .post('/sync')
+      .set('authorization', `Bearer ${token}`)
+      .send({serial: product.serial, user_secret: product.user_secret});
+
+    console.log(user.serial);
+    // post consumption
+    await request(app)
+      .put('/consumption')
+      .send({serial: product.serial, ocr_secret: product.ocr_secret, value: 350});
+
+    // get consumption
     const response = await request(app)
       .get('/consumption')
       .set('authorization', `Bearer ${token}`);
