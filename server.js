@@ -31,8 +31,12 @@ app.get('/consumption', parseJWT, onlySyncedUser, catchErrors(getConsumption));
 app.post('/product', parseJWT, onlyAdmin, catchErrors(createProduct));
 app.put('/product', parseJWT, onlySyncedUser, catchErrors(setPostalCode));
 
-http.createServer(app).listen(PORT, _ => {
+let HTTPServer = http.createServer(app);
+HTTPServer.listen(PORT, _ => {
   console.log(`listening on http://localhost:${PORT}`);
 });
 
-module.exports = app;
+module.exports = {
+  app,
+  HTTPServer
+}
