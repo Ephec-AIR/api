@@ -1,4 +1,4 @@
-![test](https://travis-ci.org/Ephec-AIR/api.svg?branch=master)
+[![Build Status](https://travis-ci.org/Ephec-AIR/api.svg?branch=master)](https://travis-ci.org/Ephec-AIR/api)
 
 ## AIR
 ### REST api for AIR. 
