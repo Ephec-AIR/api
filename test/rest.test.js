@@ -13,8 +13,8 @@ const Product = require('../models/Product');
 const User = require('../models/User');
 const Consumption = require('../models/Consumption');
 
-const username = process.env.USER;
-const password = process.env.PASSWORD;
+const username = process.env.AIR_USER || "toto";
+const password = process.env.AIR_PASSWORD || "test123";
 const fakeSerial = casual.uuid;
 const fakeOcrSecret = "dab035674b6e91e2395b471b4cdf6bba558580bb";
 const fakeUserSecret = "e4bc2b6b236d143bd51522c0";
@@ -35,10 +35,10 @@ async function generateProduct() {
   return product;
 }
 
-async function logUser(role='user') {
+/*async function logUser(role='user') {
   const response = await request(app).post('/login').send({username, password});
   userId = (await decodeToken(response.body.token)).userId;
-}
+}*/
 
 beforeAll(() => {
   return cleanDB();
@@ -62,12 +62,16 @@ describe('authentication [user]', () => {
     }));
   });
 
-  it('should send a status 500 if no username is provided', async () => {
-    return request(app).post('/login').send({password}).expect(500);
+  it('should send a status 400 if nor username nor password is provided', async () => {
+    return request(app).post('/login').send().expect(400);
   });
 
-  it('should send a status 500 if no password is provided', async () => {
-    return request(app).post('/login').send({username}).expect(500);
+  it('should send a status 400 if no username is provided', async () => {
+    return request(app).post('/login').send({password}).expect(400);
+  });
+
+  it('should send a status 400 if no password is provided', async () => {
+    return request(app).post('/login').send({username}).expect(400);
   });
 
   it('should send a status 403 if username or/and password is wrong', async () => {
@@ -78,8 +82,6 @@ describe('authentication [user]', () => {
 
 describe('product creation [admin]', () => {
   it('should only allow an admin to add a product', async () => {
-    // get userId
-    //const userId = (await decodeToken((await logUser()))).userId;
     // make user admin
     const user = await User.findOne({userId});
     user.isAdmin = true;
@@ -108,39 +110,7 @@ describe('product creation [admin]', () => {
     const response = await request(app)
       .post('/product')
       .set('authorization', `Bearer ${nonAdminToken}`);
-  });
-});
-
-describe('product update [user]', () => {
-  it('should not update the product if the user is not connected (no jwt provided)', async () => {
-    return request(app).put('/product').expect(401);
-  });
-
-  it('should not update the product if the user is not sync with a product (no serial linked to user)', async () => {
-    const user = await User.findOne({userId});
-    const token = user.generateJWT(username);
-    return request(app)
-      .put('/product')
-      .set('authorization', `Bearer ${token}`)
-      .expect(404);
-  });
-
-  it('should update the product', async () => {
-    const user = await User.findOne({userId});
-    const token = user.generateJWT(username);
-    const product = await generateProduct();
-
-    // link user to product
-    const response = await request(app)
-      .post('/sync')
-      .set('authorization', `Bearer ${token}`)
-      .send({serial: product.serial, user_secret: product.user_secret});
-
-    return request(app)
-      .put('/product')
-      .set('authorization', `Bearer ${response.body.token}`)
-      .send({postalCode: '77777'})
-      .expect(200);
+    expect(response.status).toBe(403);
   });
 });
 
@@ -150,24 +120,34 @@ describe('sync product [user]', () => {
     return request(app).post('/sync').send({serial: product.serial, user_secret: product.user_secret}).expect(401);
   });
 
-  it('should send a status 500 if serial is not provided', async () => {
+  it('should send a status 400 if nor serial nor user_secret is not provided', async () => {
+    const user = await User.findOne({userId});
+    const token = user.generateJWT(username);
+    return request(app)
+      .post('/sync')
+      .set('authorization', `Bearer ${token}`)
+      .send()
+      .expect(400);
+  });
+
+  it('should send a status 400 if serial is not provided', async () => {
     const user = await User.findOne({userId});
     const token = user.generateJWT(username);
     return request(app)
       .post('/sync')
       .set('authorization', `Bearer ${token}`)
       .send({user_secret: fakeUserSecret})
-      .expect(500);
+      .expect(400);
   });
 
-  it('should send a status 500 if user_secret is not provided', async () => {
+  it('should send a status 400 if user_secret is not provided', async () => {
     const user = await User.findOne({userId});
     const token = user.generateJWT(username);
     return request(app)
       .post('/sync')
       .set('authorization', `Bearer ${token}`)
       .send({serial: fakeSerial})
-      .expect(500);
+      .expect(400);
   });
 
   it('should not sync product with user if the product does not exist', async () => {
@@ -177,7 +157,8 @@ describe('sync product [user]', () => {
     return request(app)
       .post('/sync')
       .set('authorization', `Bearer ${token}`)
-      .send({serial: fakeSerial, user_secret: product.user_secret}).expect(404);
+      .send({serial: fakeSerial, user_secret: product.user_secret})
+      .expect(404);
   });
 
   it('should not sync product with user if user_secret is not associated with the product', async () => {
@@ -187,7 +168,8 @@ describe('sync product [user]', () => {
     return request(app)
       .post('/sync')
       .set('authorization', `Bearer ${token}`)
-      .send({serial: product.serial, user_secret: fakeUserSecret}).expect(403);
+      .send({serial: product.serial, user_secret: fakeUserSecret})
+      .expect(403);
   });
 
   it('should sync product with user if secret and ocr_secret is ok', async () => {
@@ -209,35 +191,69 @@ describe('sync product [user]', () => {
   });
 });
 
+describe('product update [user]', () => {
+  it('should not update the product if the user is not connected (no jwt provided)', async () => {
+    return request(app).put('/product').expect(401);
+  });
+
+  it('should not update the product if the user is not sync with a product (no serial linked to user)', async () => {
+    const user = await User.findOne({userId});
+    user.serial = null;
+    const token = user.generateJWT(username);
+    return request(app)
+      .put('/product')
+      .set('authorization', `Bearer ${token}`)
+      .expect(412);
+  });
+
+  it('should update the product', async () => {
+    const user = await User.findOne({userId});
+    const token = user.generateJWT(username);
+    const product = await generateProduct();
+
+    // link user to product
+    const response = await request(app)
+      .post('/sync')
+      .set('authorization', `Bearer ${token}`)
+      .send({serial: product.serial, user_secret: product.user_secret});
+
+    return request(app)
+      .put('/product')
+      .set('authorization', `Bearer ${response.body.token}`)
+      .send({postalCode: '1340'})
+      .expect(200);
+  });
+});
+
 describe('add consumption [ocr]', () => {
-  it('should send a statuts 500 if ocr_secret is not provided', async () => {
+  it('should send a statuts 400 if ocr_secret is not provided', async () => {
     return request(app)
       .put('/consumption')
       .send({
         serial: fakeSerial,
         value: 350
       })
-      .expect(500);
+      .expect(400);
   });
 
-  it('should send a statuts 500 if serial is not provided', async () => {
+  it('should send a statuts 400 if serial is not provided', async () => {
     return request(app)
       .put('/consumption')
       .send({
         ocr_secret: fakeOcrSecret,
         value: 350
       })
-      .expect(500);
+      .expect(400);
   });
 
-  it('should send a statuts 500 if value is not provided', async () => {
+  it('should send a statuts 400 if value is not provided', async () => {
     return request(app)
       .put('/consumption')
       .send({
         ocr_secret: fakeOcrSecret,
         serial: fakeSerial
       })
-      .expect(500);
+      .expect(400);
   });
 
   it('should send a status 404 if the product does not exist [wrong serial]', async () => {
@@ -263,7 +279,7 @@ describe('add consumption [ocr]', () => {
       .expect(403);
   });
 
-  it('should send a status 402 if the product is disabled', async () => {
+  it('should send a status 410 if the product is disabled', async () => {
     const product = await generateProduct();
     product.isActive = false;
     await product.save();
@@ -275,7 +291,7 @@ describe('add consumption [ocr]', () => {
         ocr_secret: product.ocr_secret,
         value: 350
       })
-      .expect(402);
+      .expect(410);
   });
 
   it('should add consumption to product if everything is ok', async () => {
@@ -298,15 +314,19 @@ describe('get consumption [user]', () => {
     // based on previous tests
     const user = await User.findOne({userId});
     const token = user.generateJWT(username);
-    const product = await generateProduct();
+    let product;
 
     // sync
-    await request(app)
-      .post('/sync')
-      .set('authorization', `Bearer ${token}`)
-      .send({serial: product.serial, user_secret: product.user_secret});
-
-    console.log(user.serial);
+    if (user.serial === null) {
+      product = await generateProduct();
+      await request(app)
+        .post('/sync')
+        .set('authorization', `Bearer ${token}`)
+        .send({serial: product.serial, user_secret: product.user_secret});
+    } else {
+      product = await Product.findOne({serial: user.serial});
+    }
+      
     // post consumption
     await request(app)
       .put('/consumption')
@@ -326,7 +346,7 @@ describe('get consumption [user]', () => {
     }));
   });
 
-  it('should send a status 400 if the user is not sync with the product [no serial in jwt]', async () => {
+  it('should send a status 412 if the user is not sync with the product [no serial in jwt]', async () => {
     // unsync user with product
     const user = await User.findOne({userId});
     const token = user.generateJWT(username);
@@ -338,6 +358,6 @@ describe('get consumption [user]', () => {
     return request(app)
       .get('/consumption')
       .set('authorization', `Bearer ${unSyncToken}`)
-      .expect(400);
+      .expect(412);
   });
 });

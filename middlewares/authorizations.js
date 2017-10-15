@@ -21,7 +21,7 @@ const admin = (req, res, next) => {
   }
 
   if (!req.user.isAdmin) {
-    res.status(401).send('admin only !');
+    res.status(403).send('admin only !');
     return;
   }
   next();
@@ -42,7 +42,7 @@ const ocr = async (req, res, next) => {
   }
 
   if (!product.isActive) {
-    res.status(402).end();
+    res.status(410).end();
     return;
   }
   next();

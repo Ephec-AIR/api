@@ -4,7 +4,7 @@ function validateLogin(req, res, next) {
 
   const errors = req.validationErrors();
   if (errors) {
-    return res.status(500).json({error: errors.map(err => err.msg)});
+    return res.status(400).json({error: errors.map(err => err.msg)});
   }
   next();
 }
@@ -15,7 +15,7 @@ function validateSync(req, res, next) {
 
   const errors = req.validationErrors();
   if (errors) {
-    return res.status(500).json({error: errors.map(err => err.msg)});
+    return res.status(400).json({error: errors.map(err => err.msg)});
   }
   next();
 }
@@ -27,7 +27,7 @@ function validateAddConsumption(req, res, next) {
 
   const errors = req.validationErrors();
   if (errors) {
-    return res.status(500).json({error: errors.map(err => err.msg)});
+    return res.status(400).json({error: errors.map(err => err.msg)});
   }
   next();
 }

@@ -18,7 +18,7 @@ async function create(req, res) {
 
 async function setPostalCode(req, res) {
   if (!req.user.serial) {
-    res.status(404).end();
+    res.status(412).end();
   }
   const product = await Product.findOne({serial: req.user.serial})
   product.postalCode = req.body.postalCode;
