@@ -1,3 +1,5 @@
+// Connect to the database and expose the connected object
+
 const mongoose = require('mongoose');
 const production = process.env.NODE_ENV === 'production';
 const DBURL = production ? process.env.DBURL : 'mongodb://localhost:27017/air';
