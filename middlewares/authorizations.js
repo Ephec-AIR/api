@@ -23,7 +23,7 @@ const admin = (req, res, next) => {
 }
 
 const owner = async (req, res, next) => {
-  const {user_secret} = req.body;
+  const {user_secret, serial} = req.body;
   const product = await Product.findOne({serial});
 
   if (!product) {
@@ -35,6 +35,7 @@ const owner = async (req, res, next) => {
     res.status(403).end();
     return
   }
+  next();
 }
 
 const ocr = async (req, res, next) => {
