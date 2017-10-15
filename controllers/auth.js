@@ -33,18 +33,7 @@ async function login(req, res) {
 }
 
 async function sync(req, res) {
-  const {serial, user_secret} = req.body;
-  const product = await Product.findOne({serial});
-
-  if (!product) {
-    res.status(404).end();
-    return;
-  }
-
-  if (product.user_secret !== user_secret) {
-    res.status(403).end();
-    return
-  }
+  const {serial} = req.body;
 
   const user = await User.findOne({userId: req.user.userId});
   user.serial = serial;

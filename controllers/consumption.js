@@ -15,10 +15,6 @@ async function add(req, res) {
 }
 
 async function get(req, res) {
-  if (!req.user.serial) {
-    res.status(412).end();
-    return;
-  }
   res.status(200).json(await Consumption.find({serial: req.user.serial}));
 }
 

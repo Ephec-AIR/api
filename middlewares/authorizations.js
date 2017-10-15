@@ -15,16 +15,26 @@ const login = jwt({
 });
 
 const admin = (req, res, next) => {
-  if (!req.user) {
-    res.status(401).send('you should login !');
-    return;
-  }
-
   if (!req.user.isAdmin) {
     res.status(403).send('admin only !');
     return;
   }
   next();
+}
+
+const owner = async (req, res, next) => {
+  const {user_secret} = req.body;
+  const product = await Product.findOne({serial});
+
+  if (!product) {
+    res.status(404).end();
+    return;
+  }
+
+  if (product.user_secret !== user_secret) {
+    res.status(403).end();
+    return
+  }
 }
 
 const ocr = async (req, res, next) => {
@@ -48,8 +58,18 @@ const ocr = async (req, res, next) => {
   next();
 }
 
+const sync = (req, res, next) => {
+  if (!req.user.serial) {
+    res.status(412).end();
+    return;
+  }
+  next();
+}
+
 module.exports = {
   jwt: login,
   admin,
-  ocr
+  owner,
+  ocr,
+  sync
 }

@@ -12,4 +12,4 @@ cache:
 before_script:
   - npm install -g jest-cli
 script:
-  - jest test --ci
+  - jest test --ci --colors
