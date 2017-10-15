@@ -9,6 +9,8 @@ services:
 cache:
   directories:
     - node_modules
+install:
+  - npm install -g codecov
 before_script:
   - npm install -g jest-cli
 script:
