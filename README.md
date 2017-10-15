@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/Ephec-AIR/api.svg?branch=master)](https://travis-ci.org/Ephec-AIR/api)
-
+[![Code coverage](https://codecov.io/gh/Ephec-AIR/api/branch/master/graph/badge.svg)](https://codecov.io/gh/Ephec-AIR/api/branch/master)
 ## AIR
 ### REST api for AIR. 
 
