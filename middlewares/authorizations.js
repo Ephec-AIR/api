@@ -2,7 +2,7 @@ const jwt = require('express-jwt');
 const Product = require('../models/Product');
 const JWT_SECRET = process.env.JWT_SECRET;
 
-const login = jwt({
+const parseJWT = jwt({
   secret: JWT_SECRET,
   getToken: function (req) {
     if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
@@ -14,7 +14,7 @@ const login = jwt({
   }
 });
 
-const admin = (req, res, next) => {
+const onlyAdmin = (req, res, next) => {
   if (!req.user.isAdmin) {
     res.status(403).send('admin only !');
     return;
@@ -22,7 +22,7 @@ const admin = (req, res, next) => {
   next();
 }
 
-const owner = async (req, res, next) => {
+const doUserOwn = async (req, res, next) => {
   const {user_secret, serial} = req.body;
   const product = await Product.findOne({serial});
 
@@ -38,7 +38,7 @@ const owner = async (req, res, next) => {
   next();
 }
 
-const ocr = async (req, res, next) => {
+const onlyActiveOCR = async (req, res, next) => {
   const {ocr_secret, serial} = req.body;
   const product = await Product.findOne({serial});
 
@@ -59,7 +59,7 @@ const ocr = async (req, res, next) => {
   next();
 }
 
-const sync = (req, res, next) => {
+const onlySyncedUser = (req, res, next) => {
   if (!req.user.serial) {
     res.status(412).end();
     return;
@@ -68,9 +68,9 @@ const sync = (req, res, next) => {
 }
 
 module.exports = {
-  jwt: login,
-  admin,
-  owner,
-  ocr,
-  isSync: sync
+  parseJWT,
+  onlyAdmin,
+  doUserOwn,
+  onlyActiveOCR,
+  onlySyncedUser
 }

@@ -1,13 +1,14 @@
+const process = require('process');
 const {promisify} = require('util');
-const app = require('../server');
+const {app, HTTPServer} = require('../server');
 const request = require('supertest');
 const casual = require('casual'); // fake data
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const uuid = require('uuid/v4')
 const {cleanDB} = require('../utils');
+const mongoose = require('../mongoose');
 const JWT_SECRET = process.env.JWT_SECRET;
-
 // models
 const Product = require('../models/Product');
 const User = require('../models/User');
@@ -16,8 +17,8 @@ const Consumption = require('../models/Consumption');
 const username = process.env.AIR_USER || "toto";
 const password = process.env.AIR_PASSWORD || "test123";
 const fakeSerial = casual.uuid;
-const fakeOcrSecret = "dab035674b6e91e2395b471b4cdf6bba558580bb";
-const fakeUserSecret = "e4bc2b6b236d143bd51522c0";
+const fakeOcrSecret = "TfN3xudmtYqkJeA1kEECgbattUA";
+const fakeUserSecret = "T22FdjUjVfGvExEr";
 let userId = null;
 
 function decodeToken(token) {
@@ -29,14 +30,19 @@ function decodeToken(token) {
 
 async function generateProduct() {
   const serial = uuid();
-  const ocr_secret = (await promisify(crypto.randomBytes)(20)).toString('hex');
-  const user_secret = (await promisify(crypto.randomBytes)(12)).toString('hex');
+  const ocr_secret = (await promisify(crypto.randomBytes)(20)).toString('base64');
+  const user_secret = (await promisify(crypto.randomBytes)(12)).toString('base64');
   const product = await new Product({serial, ocr_secret, user_secret}).save();
   return product;
 }
 
 beforeAll(() => {
   return cleanDB();
+});
+
+afterAll(() => {
+  mongoose.disconnect();
+  HTTPServer.close();
 });
 
 describe('authentication [user]', () => {

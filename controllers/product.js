@@ -6,12 +6,9 @@ const Product = require('../models/Product');
 const Consumption = require('../models/Consumption');
 
 async function create(req, res) {
-  // serial (int incrémental)
-  // ocr 20 bytes
-  // user 12 bytes
   const serial = uuid();
-  const ocr_secret = (await promisify(crypto.randomBytes)(20)).toString('hex');
-  const user_secret = (await promisify(crypto.randomBytes)(12)).toString('hex');
+  const ocr_secret = (await promisify(crypto.randomBytes)(20)).toString('base64');
+  const user_secret = (await promisify(crypto.randomBytes)(12)).toString('base64');
   const product = await new Product({serial, ocr_secret, user_secret}).save();
   res.status(200).json(simpleProductJson(product));
 }

@@ -17,14 +17,13 @@ const UserSchema = new mongoose.Schema({
     default: false
   }
 });
-
-function autopopulate(next) {
-  this.populate('serial');
-  next();
-}
-
 UserSchema.index({userId: 1}, {unique: true});
 
+/**
+ * Generate a JSON Web Token based on the data saved in our database
+ * plus the username given by NodeBB during the authentication.
+ * If the user is not linked to an OCR yet, replace the ocr's serial with null.
+ */
 UserSchema.methods.generateJWT = function(username) {
   return jwt.sign({
       userId: this.userId,
