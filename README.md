@@ -1,3 +1,5 @@
+![test](https://travis-ci.org/Ephec-AIR/api.svg?branch=master)
+
 ## AIR
 ### REST api for AIR. 
 
