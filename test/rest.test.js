@@ -326,7 +326,7 @@ describe('get consumption [user]', () => {
     } else {
       product = await Product.findOne({serial: user.serial});
     }
-      
+
     // post consumption
     await request(app)
       .put('/consumption')
@@ -340,7 +340,7 @@ describe('get consumption [user]', () => {
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBe(true);
     expect(response.body[0]).toEqual(expect.objectContaining({
-      date: expect.any(Date),
+      date: expect.stringMatching('d{4}-([0]\d|1[0-2])-([0-2]\d|3[01])$'),
       value: expect.any(Number),
       serial: (await decodeToken(token)).serial
     }));

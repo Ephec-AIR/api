@@ -71,5 +71,5 @@ module.exports = {
   admin,
   owner,
   ocr,
-  sync
+  isSync: sync
 }
