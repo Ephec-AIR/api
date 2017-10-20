@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 const User = require('../models/User');
 const Product = require('../models/Product');
-const BASE_URL = 'https://air.ephec-ti.org/forum';
+const BASE_URL = 'https://air-forum.ephec-ti.org';
 
 async function login(req, res) {
   const response = await fetch(`${BASE_URL}/api/ns/login`, {
