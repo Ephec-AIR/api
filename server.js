@@ -1,11 +1,12 @@
 // Server entrypoint
 
 const http = require('http');
+const url = require('url');
+const cors = require('cors');
 const express = require('express');
 const dotenv = require('dotenv').config();
 const bodyParser = require('body-parser');
 const validator = require('express-validator');
-const cookieParser = require('cookie-parser');
 const catchErrors = require('./middlewares/errors');
 const {parseJWT, onlyAdmin, doUserOwn, onlyActiveOCR, onlySyncedUser} = require('./middlewares/authorizations');
 const {requireFields} = require('./middlewares/validator');
@@ -16,10 +17,21 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 const production = process.env.NODE_ENV === 'production';
+const corsOptions = {
+  origin: (origin, cb) => {
+    if (!origin) {
+      cb(null, false);
+      return;
+    }
+    const u = url.parse(origin);
+    cb(null, u.hostname == 'localhost' || u.hostname == '127.0.0.1');
+  },
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
 
 // middlewares
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
-app.use(cookieParser()); // à voir si on en a besoin
 app.use(validator());
 
 // REST
