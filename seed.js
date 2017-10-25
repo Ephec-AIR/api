@@ -139,7 +139,7 @@ function seed() {
     const product = await generateProduct();
     Product.insertMany(product).then(async docs => {
       if (process.argv[2] && process.argv[2] === '--sync') {
-        const token = await logUser("toto", "test123");
+        const {token} = await logUser("toto", "test123");
         await syncUser(product.serial, product.user_secret, token);
       }
       consumptions.forEach(c => c.serial = product.serial);
@@ -149,13 +149,16 @@ function seed() {
 }
 
 async function logUser(username, password) {
-  return fetch('http://localhost:3000/login', {
+  const response = await fetch('http://localhost:3000/login', {
     method: 'POST',
     headers: {
       'content-type': 'application/json'
     },
     body: JSON.stringify({username, password})
   });
+
+  const data = await response.json();
+  return data;
 }
 
 async function syncUser(serial, user_secret, token) {
