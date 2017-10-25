@@ -2,6 +2,7 @@ const {promisify} = require('util');
 const {cleanDB} = require('./utils');
 const uuid = require('uuid/v4');
 const crypto = require('crypto');
+const fetch = require('node-fetch');
 const Product = require('./models/Product');
 const User = require('./models/User');
 const Consumption = require('./models/Consumption');
@@ -136,10 +137,35 @@ const consumptions = [
 function seed() {
   return cleanDB().then(async () => {
     const product = await generateProduct();
-    Product.insertMany(product).then(docs => {
+    Product.insertMany(product).then(async docs => {
+      if (process.argv[2] && process.argv[2] === '--sync') {
+        const token = await logUser("toto", "test123");
+        await syncUser(product.serial, product.user_secret, token);
+      }
       consumptions.forEach(c => c.serial = product.serial);
       Consumption.insertMany(consumptions).then(() => process.exit(0));
     });
+  });
+}
+
+async function logUser(username, password) {
+  return fetch('http://localhost:3000/login', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify({username, password})
+  });
+}
+
+async function syncUser(serial, user_secret, token) {
+  return fetch('http://localhost:3000/sync', {
+    method: 'POST',
+    headers: {
+        'content-type': 'application/json',
+        'authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({serial, user_secret})
   });
 }
 
