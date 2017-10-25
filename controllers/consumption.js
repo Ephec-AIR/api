@@ -15,6 +15,11 @@ async function add(req, res) {
 }
 
 async function get(req, res) {
+  if (req.query.start && req.query.end) {
+    const {start, end} = req.query;
+    res.status(200).json(await Consumption.find({serial: req.user.serial, date: {$gte: start, $lte: end}}));
+    return;
+  }
   res.status(200).json(await Consumption.find({serial: req.user.serial}));
 }
 
