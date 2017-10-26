@@ -20,115 +20,115 @@ async function generateProduct() {
 // 1 week consumptions
 const consumptions = [
   {
-    date: new Date(2017, 10, 23, 12),
+    date: new Date(2017, 09, 23, 12),
     value: 300,
     serial: 0
   },{
-    date: new Date(2017, 10, 23, 13),
+    date: new Date(2017, 09, 23, 13),
     value: 350,
     serial: 0
   },{
-    date: new Date(2017, 10, 23, 14),
+    date: new Date(2017, 09, 23, 14),
     value: 400,
     serial: 0
   },{
-    date: new Date(2017, 10, 23, 15),
+    date: new Date(2017, 09, 23, 15),
     value: 450,
     serial: 0
   },{
-    date: new Date(2017, 10, 24, 12),
+    date: new Date(2017, 09, 24, 12),
     value: 300,
     serial: 0
   },{
-    date: new Date(2017, 10, 24, 13),
+    date: new Date(2017, 09, 24, 13),
     value: 350,
     serial: 0
   },{
-    date: new Date(2017, 10, 24, 14),
+    date: new Date(2017, 09, 24, 14),
     value: 400,
     serial: 0
   },{
-    date: new Date(2017, 10, 24, 15),
+    date: new Date(2017, 09, 24, 15),
     value: 450,
     serial: 0
   },{
-    date: new Date(2017, 10, 25, 12),
+    date: new Date(2017, 09, 25, 12),
     value: 300,
     serial: 0
   },{
-    date: new Date(2017, 10, 25, 13),
+    date: new Date(2017, 09, 25, 13),
     value: 350,
     serial: 0
   },{
-    date: new Date(2017, 10, 25, 14),
+    date: new Date(2017, 09, 25, 14),
     value: 400,
     serial: 0
   },{
-    date: new Date(2017, 10, 25, 15),
+    date: new Date(2017, 09, 25, 15),
     value: 450,
     serial: 0
   },{
-    date: new Date(2017, 10, 26, 12),
+    date: new Date(2017, 09, 26, 12),
     value: 300,
     serial: 0
   },{
-    date: new Date(2017, 10, 26, 13),
+    date: new Date(2017, 09, 26, 13),
     value: 350,
     serial: 0
   },{
-    date: new Date(2017, 10, 26, 14),
+    date: new Date(2017, 09, 26, 14),
     value: 400,
     serial: 0
   },{
-    date: new Date(2017, 10, 26, 15),
+    date: new Date(2017, 09, 26, 15),
     value: 450,
     serial: 0
   },{
-    date: new Date(2017, 10, 27, 12),
+    date: new Date(2017, 09, 27, 12),
     value: 300,
     serial: 0
   },{
-    date: new Date(2017, 10, 27, 13),
+    date: new Date(2017, 09, 27, 13),
     value: 350,
     serial: 0
   },{
-    date: new Date(2017, 10, 27, 14),
+    date: new Date(2017, 09, 27, 14),
     value: 400,
     serial: 0
   },{
-    date: new Date(2017, 10, 27, 15),
+    date: new Date(2017, 09, 27, 15),
     value: 450,
     serial: 0
   },{
-    date: new Date(2017, 10, 28, 12),
+    date: new Date(2017, 09, 28, 12),
     value: 300,
     serial: 0
   },{
-    date: new Date(2017, 10, 28, 13),
+    date: new Date(2017, 09, 28, 13),
     value: 350,
     serial: 0
   },{
-    date: new Date(2017, 10, 28, 14),
+    date: new Date(2017, 09, 28, 14),
     value: 400,
     serial: 0
   },{
-    date: new Date(2017, 10, 28, 15),
+    date: new Date(2017, 09, 28, 15),
     value: 450,
     serial: 0
   },{
-    date: new Date(2017, 10, 29, 12),
+    date: new Date(2017, 09, 29, 12),
     value: 300,
     serial: 0
   },{
-    date: new Date(2017, 10, 29, 13),
+    date: new Date(2017, 09, 29, 13),
     value: 350,
     serial: 0
   },{
-    date: new Date(2017, 10, 29, 14),
+    date: new Date(2017, 09, 29, 14),
     value: 400,
     serial: 0
   },{
-    date: new Date(2017, 10, 29, 15),
+    date: new Date(2017, 09, 29, 15),
     value: 450,
     serial: 0
   }
