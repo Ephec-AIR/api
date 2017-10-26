@@ -2,7 +2,7 @@
 
 const http = require('http');
 const url = require('url');
-//const cors = require('cors');
+const cors = require('cors');
 const express = require('express');
 const dotenv = require('dotenv').config();
 const bodyParser = require('body-parser');
