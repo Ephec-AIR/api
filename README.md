@@ -33,8 +33,10 @@ node seed.js --sync
 ```
 
 ### Doc
-Wait a little bit ;)
+
+[See our wiki](https://github.com/Ephec-AIR/api/wiki/Endpoint)
 
 ### Tech
 - Node
 - MongoDB
+- Jest
