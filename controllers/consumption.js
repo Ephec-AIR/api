@@ -20,10 +20,10 @@ async function get(req, res) {
     const consumption = await Consumption.find({serial: req.user.serial, date: {$gte: start, $lte: end}});
     const rangeConsumption = getConsumptionAccordingToType(consumption, type);
     const finalConsumption = Object.keys(rangeConsumption).map(range => {
-      if (!range.end) {
-        return range.start;
+      if (!rangeConsumption[range].end) {
+        return rangeConsumption[range].start;
       }
-      return range.end - range.start;
+      return rangeConsumption[range].end - rangeConsumption[range].start;
     });
     res.status(200).json(finalConsumption);
     return;
