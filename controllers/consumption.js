@@ -16,11 +16,34 @@ async function add(req, res) {
 
 async function get(req, res) {
   if (req.query.start && req.query.end) {
-    const {start, end} = req.query;
-    res.status(200).json(await Consumption.find({serial: req.user.serial, date: {$gte: start, $lte: end}}));
+    const {start, end, type} = req.query;
+    const consumption = await Consumption.find({serial: req.user.serial, date: {$gte: start, $lte: end}});
+    res.status(200).json(getConsumptionAccordingToType(consumption, type));
     return;
   }
   res.status(200).json(await Consumption.find({serial: req.user.serial}));
+}
+
+function getConsumptionAccordingToType (consumption, type) {
+  const getRangeIndex = {
+    'year': date => new Date(date).getMonth(),
+    'month': date => new Date(date).getDate(),
+    'week': date => new Date(date).getDay(),
+    'day': date => new Date(date).getHours()
+  };
+
+  console.log(consumption);
+
+  return consumption.reduce((prev, current) => {
+    const index = getRangeIndex[type]
+    if (prev[index] && prev[index].start) {
+      prev[index].end = current.value;
+    } else {
+      prev[index] = {};
+      prev[index].start = current.value;
+    }
+    return prev;
+  }, {});
 }
 
 module.exports = {

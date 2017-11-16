@@ -37,99 +37,99 @@ const consumptions = [
     serial: 0
   },{
     date: new Date(2017, 09, 24, 12),
-    value: 300,
+    value: 510,
     serial: 0
   },{
     date: new Date(2017, 09, 24, 13),
-    value: 350,
+    value: 520,
     serial: 0
   },{
     date: new Date(2017, 09, 24, 14),
-    value: 400,
+    value: 560,
     serial: 0
   },{
     date: new Date(2017, 09, 24, 15),
-    value: 450,
+    value: 610,
     serial: 0
   },{
     date: new Date(2017, 09, 25, 12),
-    value: 300,
+    value: 630,
     serial: 0
   },{
     date: new Date(2017, 09, 25, 13),
-    value: 350,
+    value: 670,
     serial: 0
   },{
     date: new Date(2017, 09, 25, 14),
-    value: 400,
+    value: 700,
     serial: 0
   },{
     date: new Date(2017, 09, 25, 15),
-    value: 450,
+    value: 705,
     serial: 0
   },{
     date: new Date(2017, 09, 26, 12),
-    value: 300,
+    value: 710,
     serial: 0
   },{
     date: new Date(2017, 09, 26, 13),
-    value: 350,
+    value: 717,
     serial: 0
   },{
     date: new Date(2017, 09, 26, 14),
-    value: 400,
+    value: 800,
     serial: 0
   },{
     date: new Date(2017, 09, 26, 15),
-    value: 450,
+    value: 820,
     serial: 0
   },{
     date: new Date(2017, 09, 27, 12),
-    value: 300,
+    value: 850,
     serial: 0
   },{
     date: new Date(2017, 09, 27, 13),
-    value: 350,
+    value: 920,
     serial: 0
   },{
     date: new Date(2017, 09, 27, 14),
-    value: 400,
+    value: 970,
     serial: 0
   },{
     date: new Date(2017, 09, 27, 15),
-    value: 450,
+    value: 1000,
     serial: 0
   },{
     date: new Date(2017, 09, 28, 12),
-    value: 300,
+    value: 1100,
     serial: 0
   },{
     date: new Date(2017, 09, 28, 13),
-    value: 350,
+    value: 1300,
     serial: 0
   },{
     date: new Date(2017, 09, 28, 14),
-    value: 400,
+    value: 1350,
     serial: 0
   },{
     date: new Date(2017, 09, 28, 15),
-    value: 450,
+    value: 1410,
     serial: 0
   },{
     date: new Date(2017, 09, 29, 12),
-    value: 300,
+    value: 1435,
     serial: 0
   },{
     date: new Date(2017, 09, 29, 13),
-    value: 350,
+    value: 1450,
     serial: 0
   },{
     date: new Date(2017, 09, 29, 14),
-    value: 400,
+    value: 1480,
     serial: 0
   },{
     date: new Date(2017, 09, 29, 15),
-    value: 450,
+    value: 1520,
     serial: 0
   }
 ];

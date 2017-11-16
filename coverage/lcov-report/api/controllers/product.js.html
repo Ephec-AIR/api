@@ -20,9 +20,9 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">100% </span>
+        <span class="strong">41.18% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>17/17</span>
+        <span class='fraction'>7/17</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
@@ -30,18 +30,18 @@
         <span class='fraction'>0/0</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">100% </span>
+        <span class="strong">0% </span>
         <span class="quiet">Functions</span>
-        <span class='fraction'>3/3</span>
+        <span class='fraction'>0/3</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">100% </span>
+        <span class="strong">41.18% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>17/17</span>
+        <span class='fraction'>7/17</span>
       </div>
     </div>
   </div>
-  <div class='status-line high'></div>
+  <div class='status-line low'></div>
 <pre><table class="coverage">
 <tr><td class="line-count quiet">1
 2
@@ -86,23 +86,23 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -120,24 +120,24 @@ const User = require('../models/User');
 const Product = require('../models/Product');
 const Consumption = require('../models/Consumption');
 &nbsp;
-async function create(req, res) {
-  const serial = uuid();
-  const ocr_secret = (await promisify(crypto.randomBytes)(20)).toString('base64');
-  const user_secret = (await promisify(crypto.randomBytes)(12)).toString('base64');
-  const product = await new Product({serial, ocr_secret, user_secret}).save();
-  res.status(200).json(simpleProductJson(product));
+async function <span class="fstat-no" title="function not covered" >create(</span>req, res) {
+  const serial = <span class="cstat-no" title="statement not covered" >uuid();</span>
+  const ocr_secret = <span class="cstat-no" title="statement not covered" >(await promisify(crypto.randomBytes)(20)).toString('base64');</span>
+  const user_secret = <span class="cstat-no" title="statement not covered" >(await promisify(crypto.randomBytes)(12)).toString('base64');</span>
+  const product = <span class="cstat-no" title="statement not covered" >await new Product({serial, ocr_secret, user_secret}).save();</span>
+<span class="cstat-no" title="statement not covered" >  res.status(200).json(simpleProductJson(product));</span>
 }
 &nbsp;
-async function setPostalCode(req, res) {
-  const product = await Product.findOne({serial: req.user.serial})
-  product.postalCode = req.body.postalCode;
-  await product.save();
+async function <span class="fstat-no" title="function not covered" >setPostalCode(</span>req, res) {
+  const product = <span class="cstat-no" title="statement not covered" >await Product.findOne({serial: req.user.serial})</span>
+<span class="cstat-no" title="statement not covered" >  product.postalCode = req.body.postalCode;</span>
+<span class="cstat-no" title="statement not covered" >  await product.save();</span>
 &nbsp;
-  res.status(200).end();
+<span class="cstat-no" title="statement not covered" >  res.status(200).end();</span>
 }
 &nbsp;
-function simpleProductJson(product) {
-  return {
+function <span class="fstat-no" title="function not covered" >simpleProductJson(</span>product) {
+<span class="cstat-no" title="statement not covered" >  return {</span>
     serial: product.serial,
     ocr_secret: product.ocr_secret,
     user_secret: product.user_secret
@@ -154,7 +154,7 @@ module.exports = {
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Wed Oct 25 2017 18:13:29 GMT+0200 (CEST)
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Thu Nov 16 2017 10:28:45 GMT+0100 (CET)
 </div>
 </div>
 <script src="../../prettify.js"></script>
