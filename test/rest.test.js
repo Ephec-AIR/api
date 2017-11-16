@@ -334,17 +334,20 @@ describe('get consumption [user]', () => {
       .put('/consumption')
       .send({serial: product.serial, ocr_secret: product.ocr_secret, value: 350});
 
+    const end = new Date();
+    const start = new Date(end.getFullYear(), 0, 1);
+    const type = "year";
+
     // get consumption
     const response = await request(app)
-      .get('/consumption')
+      .get(`/consumption?start=${start}&end=${end}&type=${type}`)
       .set('authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
-    expect(Array.isArray(response.body)).toBe(true);
-    expect(response.body[0]).toEqual(expect.objectContaining({
-      //date: expect.stringMatching('d{4}-([0]\d|1[0-2])-([0-2]\d|3[01])$'),
-      value: expect.any(Number),
-      serial: (await decodeToken(token)).serial
+    //expect(Array.isArray(response.body)).toBe(true);
+    expect(response.body[new Date().getMonth()]).toEqual(expect.objectContaining({
+      start: expect.any(Number),
+      end: expect.any(Number)
     }));
   });
 
