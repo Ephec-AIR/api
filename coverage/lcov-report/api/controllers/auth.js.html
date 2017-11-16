@@ -20,28 +20,28 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">100% </span>
+        <span class="strong">28.57% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>21/21</span>
+        <span class='fraction'>6/21</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">75% </span>
+        <span class="strong">0% </span>
         <span class="quiet">Branches</span>
-        <span class='fraction'>3/4</span>
+        <span class='fraction'>0/4</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">100% </span>
+        <span class="strong">50% </span>
         <span class="quiet">Functions</span>
-        <span class='fraction'>2/2</span>
+        <span class='fraction'>1/2</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">100% </span>
+        <span class="strong">28.57% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>21/21</span>
+        <span class='fraction'>6/21</span>
       </div>
     </div>
   </div>
-  <div class='status-line high'></div>
+  <div class='status-line low'></div>
 <pre><table class="coverage">
 <tr><td class="line-count quiet">1
 2
@@ -109,34 +109,34 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -146,7 +146,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const fetch = require('node-fetch');
 const User = require('../models/User');
 const Product = require('../models/Product');
-const BASE_URL = 'https://air-forum.ephec-ti.org';
+const BASE_URL = 'https://air.ephec-ti.org/forum';
 &nbsp;
 async function login(req, res) {
   const response = await fetch(`${BASE_URL}/api/ns/login`, {
@@ -159,34 +159,34 @@ async function login(req, res) {
     })
   });
 &nbsp;
-  if (response.status != 200) {
+<span class="cstat-no" title="statement not covered" >  if (response.status != 200) {</span>
     // stream response
-    response.body.pipe(res).status(response.status);
-    return;
+<span class="cstat-no" title="statement not covered" >    response.body.pipe(res).status(response.status);</span>
+<span class="cstat-no" title="statement not covered" >    return;</span>
   }
 &nbsp;
-  const data = await response.json();
-  let user = await User.findOne({userId: data.uid});
+  const data = <span class="cstat-no" title="statement not covered" >await response.json();</span>
+  let user = <span class="cstat-no" title="statement not covered" >await User.findOne({userId: data.uid});</span>
   // if user does not exist in MONGODB, create it.
-  <span class="missing-if-branch" title="else path not taken" >E</span>if (!user) {
-    user = await new User({
+<span class="cstat-no" title="statement not covered" >  if (!user) {</span>
+<span class="cstat-no" title="statement not covered" >    user = await new User({</span>
       userId: data.uid,
     }).save();
   }
-  const token = user.generateJWT(data.username);
-  res.status(200).json({token})
+  const token = <span class="cstat-no" title="statement not covered" >user.generateJWT(data.username);</span>
+<span class="cstat-no" title="statement not covered" >  res.status(200).json({token})</span>
 }
 &nbsp;
-async function sync(req, res) {
-  const {serial} = req.body;
+async function <span class="fstat-no" title="function not covered" >sync(</span>req, res) {
+  const {serial} = <span class="cstat-no" title="statement not covered" >req.body;</span>
 &nbsp;
-  const user = await User.findOne({userId: req.user.userId});
-  user.serial = serial;
-  await user.save();
+  const user = <span class="cstat-no" title="statement not covered" >await User.findOne({userId: req.user.userId});</span>
+<span class="cstat-no" title="statement not covered" >  user.serial = serial;</span>
+<span class="cstat-no" title="statement not covered" >  await user.save();</span>
 &nbsp;
   // regenerate jwt
-  const token = user.generateJWT(req.user.username);
-  res.status(200).json({token});
+  const token = <span class="cstat-no" title="statement not covered" >user.generateJWT(req.user.username);</span>
+<span class="cstat-no" title="statement not covered" >  res.status(200).json({token});</span>
 }
 &nbsp;
 module.exports = {
@@ -199,7 +199,7 @@ module.exports = {
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Wed Oct 25 2017 18:13:29 GMT+0200 (CEST)
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Thu Nov 16 2017 10:28:45 GMT+0100 (CET)
 </div>
 </div>
 <script src="../../prettify.js"></script>
