@@ -28,10 +28,12 @@ function getConsumptionAccordingToType (consumption, type) {
   switch (type) {
     case 'year':
       return consumption.reduce((prev, current) => {
-        const month = new Date(current).getMonth();
+        const month = new Date(current.date).getMonth();
+        console.log(month);
         if (prev[month] && prev[month].start) {
           prev[month].end = current.value;
         } else {
+          prev[month] = {};
           prev[month].start = current.value;
         }
         return prev;
@@ -39,21 +41,23 @@ function getConsumptionAccordingToType (consumption, type) {
       break;
     case 'month':
       return consumption.reduce((prev, current) => {
-        const day = new Date(current).getDate();
+        const day = new Date(current.date).getDate();
         if (prev[day] && prev[day].start) {
           prev[day].end = current.value;
         } else {
-          prev[month].start = current.value;
+          prev[day] = {};
+          prev[day].start = current.value;
         }
         return prev;
       }, {});
       break;
     case 'week':
       return consumption.reduce((prev, current) => {
-        const day = new Date(current).getDay();
+        const day = new Date(current.date).getDay();
         if (prev[day] && prev[day].start) {
           prev[day].end = current.value;
         } else {
+          prev[day] = {};
           prev[day].start = current.value;
         }
         return prev;
@@ -61,10 +65,11 @@ function getConsumptionAccordingToType (consumption, type) {
       break;
     case 'day':
       return consumption.reduce((prev, current) => {
-        const hour = new Date(current).getHours();
+        const hour = new Date(current.date).getHours();
         if (prev[hour] && prev[hour].start) {
           prev[hour].end = current.value;
         } else {
+          prev[hour] = {};
           prev[hour].start = current.value;
         }
         return prev;
