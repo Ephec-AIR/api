@@ -25,17 +25,8 @@ async function get(req, res) {
 }
 
 function getConsumptionAccordingToType (consumption, type) {
-  const getRangeIndex = {
-    'year': date => new Date(date).getMonth(),
-    'month': date => new Date(date).getDate(),
-    'week': date => new Date(date).getDay(),
-    'day': date => new Date(date).getHours()
-  };
-
-  console.log(consumption);
-
   return consumption.reduce((prev, current) => {
-    const index = getRangeIndex[type]
+    const index = getRangeIndex(type, current.date);
     if (prev[index] && prev[index].start) {
       prev[index].end = current.value;
     } else {
@@ -45,6 +36,16 @@ function getConsumptionAccordingToType (consumption, type) {
     return prev;
   }, {});
 }
+
+const getRangeIndex = (type, date) => {
+  const types = {
+    'year': date => date.getMonth(),
+    'month': date => date.getDate(),
+    'week': date => date.getDay(),
+    'day': date => date.getHours()
+  };
+  return types[type](date);
+};
 
 module.exports = {
   addConsumtion: add,
