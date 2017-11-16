@@ -18,7 +18,14 @@ async function get(req, res) {
   if (req.query.start && req.query.end) {
     const {start, end, type} = req.query;
     const consumption = await Consumption.find({serial: req.user.serial, date: {$gte: start, $lte: end}});
-    res.status(200).json(getConsumptionAccordingToType(consumption, type));
+    const rangeConsumption = getConsumptionAccordingToType(consumption, type);
+    const finalConsumption = Object.keys(rangeConsumption).map(range => {
+      if (!range.end) {
+        return range.start;
+      }
+      return range.end - range.start;
+    });
+    res.status(200).json(finalConsumption);
     return;
   }
   res.status(200).json(await Consumption.find({serial: req.user.serial}));
