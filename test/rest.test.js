@@ -344,7 +344,7 @@ describe('get consumption [user]', () => {
       .set('authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
-    //expect(Array.isArray(response.body)).toBe(true);
+    expect(response.body).toMatchSnapshot();
     expect(response.body[new Date().getMonth()]).toEqual(expect.objectContaining({
       start: expect.any(Number),
       end: expect.any(Number)

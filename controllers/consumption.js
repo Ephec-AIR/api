@@ -32,6 +32,8 @@ function getConsumptionAccordingToType (consumption, type) {
     'day': date => new Date(date).getHours()
   };
 
+  console.log(consumption);
+
   return consumption.reduce((prev, current) => {
     const index = getRangeIndex[type]
     if (prev[index] && prev[index].start) {
