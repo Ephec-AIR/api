@@ -15,13 +15,18 @@ async function add(req, res) {
 }
 
 async function get(req, res) {
-  if (req.query.start && req.query.end) {
-    const {start, end, type} = req.query;
-    const consumption = await Consumption.find({serial: req.user.serial, date: {$gte: start, $lte: end}});
-    res.status(200).json(getConsumptionAccordingToType(consumption, type));
-    return;
-  }
-  res.status(200).json(await Consumption.find({serial: req.user.serial}));
+  const {start, end, type} = req.query;
+  const consumption = await Consumption.find({serial: req.user.serial, date: {$gte: start, $lte: end}});
+  const rangeConsumption = getConsumptionAccordingToType(consumption, type);
+  const finalConsumption = Object.keys(rangeConsumption).reduce((prev, range) => {
+    if (!rangeConsumption[range].end) {
+      prev[range] = rangeConsumption[range].start;
+    } else {
+      prev[range] = rangeConsumption[range].end - rangeConsumption[range].start;
+    }
+    return prev;
+  }, {});
+  res.status(200).json(finalConsumption);
 }
 
 function getConsumptionAccordingToType (consumption, type) {
