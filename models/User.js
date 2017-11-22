@@ -9,15 +9,24 @@ const UserSchema = new mongoose.Schema({
     unique: true
   },
   serial: {
-    type: String,
-    ref: 'Product'
+    type: String
   },
   isAdmin: {
     type: Boolean,
     default: false
   }
-});
+}, {toJSON: {virtuals: true}});
+
 UserSchema.index({userId: 1}, {unique: true});
+
+UserSchema.virtual('user_product', {
+  ref: 'Product', // The model to use
+  localField: 'serial', // Find people where `localField`
+  foreignField: 'serial', // is equal to `foreignField`
+  // If `justOne` is true, 'members' will be a single doc as opposed to
+  // an array. `justOne` is false by default.
+  justOne: true
+});
 
 /**
  * Generate a JSON Web Token based on the data saved in our database
@@ -28,13 +37,22 @@ UserSchema.methods.generateJWT = function(username) {
   return jwt.sign({
       userId: this.userId,
       isAdmin: this.isAdmin,
-      serial: this.serial || null,
+      serial: this.user_product.serial || null,
+      user_secret: this.user_product.user_secret || null,
+      postalCode: this.user_product.postalCode || null,
       username
   }, JWT_SECRET, {
     expiresIn: '1day',
     subject: 'air'
   });
+};
+
+function autopopulate(next) {
+  this.populate('user_product');
+  next();
 }
+
+UserSchema.pre('findOne', autopopulate);
 
 const User = mongoose.model('User', UserSchema);
 module.exports = User;

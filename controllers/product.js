@@ -18,7 +18,12 @@ async function setPostalCode(req, res) {
   product.postalCode = req.body.postalCode;
   await product.save();
 
-  res.status(200).end();
+  const user = await User.findOne({userId: req.user.userId});
+  console.log(user);
+
+  // regenerate jwt
+  const token = user.generateJWT(req.user.username);
+  res.status(200).json({token});
 }
 
 function simpleProductJson(product) {
