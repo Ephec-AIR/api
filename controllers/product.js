@@ -19,7 +19,6 @@ async function setPostalCode(req, res) {
   await product.save();
 
   const user = await User.findOne({userId: req.user.userId});
-  console.log(user);
 
   // regenerate jwt
   const token = user.generateJWT(req.user.username);

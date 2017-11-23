@@ -18,6 +18,7 @@ const UserSchema = new mongoose.Schema({
 }, {toJSON: {virtuals: true}});
 
 UserSchema.index({userId: 1}, {unique: true});
+UserSchema.pre('findOne', autopopulate);
 
 UserSchema.virtual('user_product', {
   ref: 'Product', // The model to use
@@ -51,8 +52,6 @@ function autopopulate(next) {
   this.populate('user_product');
   next();
 }
-
-UserSchema.pre('findOne', autopopulate);
 
 const User = mongoose.model('User', UserSchema);
 module.exports = User;
