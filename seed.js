@@ -174,6 +174,10 @@ async function syncUser(serial, user_secret, token) {
 
 seed().catch(err => console.error(err));
 
+module.exports = {
+  sampleConsumptions: consumptions
+}
+
 
 
 

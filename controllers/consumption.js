@@ -137,7 +137,8 @@ async function matching (start, end, type) {
 
   const sortedAverages = averages.sort((a, b) => b.value - a.value);
   const best = sortedAverages[0];
-  return {...best, values: totalConsumption.find(consumption.serial === best.serial)};
+  const {userId} = await User.find({serial: best.serial}); // find the user associated with the serial
+  return {...best, userId, values: totalConsumption.find(consumption.serial === best.serial)};
 }
 
 /**
@@ -148,12 +149,20 @@ async function matching (start, end, type) {
 function calculateAverage(consumption) {
   const serial = Object.keys(consumption);
   const consumptionIdx = Object.values(consumption.serial);
-  const average = consumptionIdx.reduce((prev, current) => prev += current, 0) / consumptionIdx.length;
+  const average = Math.round(consumptionIdx.reduce((prev, current) => prev += current, 0) / consumptionIdx.length);
   return {serial, average}
 }
 
 module.exports = {
   addConsumtion: add,
   getConsumption: get,
-  match
+  match,
+  subtractAccordingToType,
+  getRangeIndex,
+  getConsumptionAccordingToType,
+  getConsumptionAccordingToTypeWrapperSerial,
+  calculateRange,
+  calculateRangeWrapperSerial,
+  matching,
+  calculateAverage
 };

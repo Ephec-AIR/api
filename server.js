@@ -42,7 +42,7 @@ app.put('/consumption', requireFields("ocr_secret", "serial", "value"), catchErr
 app.get('/consumption', parseJWT, onlySyncedUser, requireQuery("start", "end", "type"), catchErrors(getConsumption));
 app.post('/product', parseJWT, onlyAdmin, catchErrors(createProduct));
 app.put('/product', parseJWT, onlySyncedUser, catchErrors(setPostalCode));
-app.get('/matching', parseJWT, onlySyncedUser, requireQuery("start", "end", "type"), catchErrors(match));
+app.get('/match', parseJWT, onlySyncedUser, requireQuery("start", "end", "type"), catchErrors(match));
 
 let HTTPServer = http.createServer(app);
 HTTPServer.listen(PORT, _ => {
