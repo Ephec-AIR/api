@@ -31,6 +31,12 @@ async function get(req, res) {
   res.status(200).json(Normalizedconsumptions);
 }
 
+async function match(req, res) {
+  const {start, end, type} = req.query;
+  const result = await matching(start, end, type);
+  res.status(200).json(result);
+}
+
 /**
  * Substract 1 year, 1 month, 1 week, 1 day according to the type of graph asked
  * @param {Date} date Date to apply the subtraction
@@ -141,12 +147,13 @@ async function matching (start, end, type) {
  */
 function calculateAverage(consumption) {
   const serial = Object.keys(consumption);
-  const consumptionIdx = Object.keys(consumption.serial);
+  const consumptionIdx = Object.values(consumption.serial);
   const average = consumptionIdx.reduce((prev, current) => prev += current, 0) / consumptionIdx.length;
   return {serial, average}
 }
 
 module.exports = {
   addConsumtion: add,
-  getConsumption: get
+  getConsumption: get,
+  match
 };

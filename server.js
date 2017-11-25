@@ -11,7 +11,7 @@ const catchErrors = require('./middlewares/errors');
 const {parseJWT, onlyAdmin, doUserOwn, onlyActiveOCR, onlySyncedUser} = require('./middlewares/authorizations');
 const {requireFields, requireQuery} = require('./middlewares/validator');
 const {login, sync} = require('./controllers/auth');
-const {addConsumtion, getConsumption} = require('./controllers/consumption');
+const {addConsumtion, getConsumption, match} = require('./controllers/consumption');
 const {createProduct, setPostalCode} = require('./controllers/product');
 const app = express();
 
@@ -42,6 +42,7 @@ app.put('/consumption', requireFields("ocr_secret", "serial", "value"), catchErr
 app.get('/consumption', parseJWT, onlySyncedUser, requireQuery("start", "end", "type"), catchErrors(getConsumption));
 app.post('/product', parseJWT, onlyAdmin, catchErrors(createProduct));
 app.put('/product', parseJWT, onlySyncedUser, catchErrors(setPostalCode));
+app.get('/matching', parseJWT, onlySyncedUser, requireQuery("start", "end", "type"), catchErrors(match));
 
 let HTTPServer = http.createServer(app);
 HTTPServer.listen(PORT, _ => {
