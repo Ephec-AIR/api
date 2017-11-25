@@ -20,24 +20,24 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">88.89% </span>
+        <span class="strong">100% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>8/9</span>
+        <span class='fraction'>13/13</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">0% </span>
+        <span class="strong">16.67% </span>
         <span class="quiet">Branches</span>
-        <span class='fraction'>0/2</span>
+        <span class='fraction'>1/6</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">0% </span>
+        <span class="strong">100% </span>
         <span class="quiet">Functions</span>
-        <span class='fraction'>0/1</span>
+        <span class='fraction'>2/2</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">88.89% </span>
+        <span class="strong">100% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>8/9</span>
+        <span class='fraction'>13/13</span>
       </div>
     </div>
   </div>
@@ -83,7 +83,24 @@
 38
 39
 40
-41</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -103,6 +120,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -110,7 +137,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -119,6 +146,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -134,31 +168,48 @@ const UserSchema = new mongoose.Schema({
     unique: true
   },
   serial: {
-    type: String,
-    ref: 'Product'
+    type: String
   },
   isAdmin: {
     type: Boolean,
     default: false
   }
-});
+}, {toJSON: {virtuals: true}});
+&nbsp;
 UserSchema.index({userId: 1}, {unique: true});
+UserSchema.pre('findOne', autopopulate);
+&nbsp;
+UserSchema.virtual('user_product', {
+  ref: 'Product', // The model to use
+  localField: 'serial', // Find people where `localField`
+  foreignField: 'serial', // is equal to `foreignField`
+  // If `justOne` is true, 'members' will be a single doc as opposed to
+  // an array. `justOne` is false by default.
+  justOne: true
+});
 &nbsp;
 /**
  * Generate a JSON Web Token based on the data saved in our database
  * plus the username given by NodeBB during the authentication.
  * If the user is not linked to an OCR yet, replace the ocr's serial with null.
  */
-UserSchema.methods.generateJWT = <span class="fstat-no" title="function not covered" >fu</span>nction(username) {
-<span class="cstat-no" title="statement not covered" >  return jwt.sign({</span>
+UserSchema.methods.generateJWT = function(username) {
+  return jwt.sign({
       userId: this.userId,
       isAdmin: this.isAdmin,
-      serial: this.serial || null,
+      serial: this.user_product.serial || <span class="branch-1 cbranch-no" title="branch not covered" >null,</span>
+      user_secret: this.user_product.user_secret || null,
+      postalCode: this.user_product.postalCode || null,
       username
   }, JWT_SECRET, {
     expiresIn: '1day',
     subject: 'air'
   });
+};
+&nbsp;
+function autopopulate(next) {
+  this.populate('user_product');
+  next();
 }
 &nbsp;
 const User = mongoose.model('User', UserSchema);
@@ -169,7 +220,7 @@ module.exports = User;
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Thu Nov 16 2017 10:28:45 GMT+0100 (CET)
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Sat Nov 25 2017 13:51:20 GMT+0100 (CET)
 </div>
 </div>
 <script src="../../prettify.js"></script>

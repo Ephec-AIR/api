@@ -1,4 +1,4 @@
-const process = require('process');
+//const process = require('process');
 const {promisify} = require('util');
 const {app, HTTPServer} = require('../server');
 const request = require('supertest');
@@ -33,7 +33,7 @@ const password = process.env.AIR_PASSWORD || "test123";
 const fakeSerial = casual.uuid;
 const fakeOcrSecret = "TfN3xudmtYqkJeA1kEECgbattUA";
 const fakeUserSecret = "T22FdjUjVfGvExEr";
-const {sampleConsumptions} = require('../seed');
+const sampleConsumptions = require('../data');
 let userId = null;
 
 function decodeToken(token) {
@@ -445,10 +445,10 @@ describe('get consumption [user]', () => {
     });
 
     it('should get the calulated value of consumption each hours, day, month according to a type of range', () => {
-      const resultYear = getConsumptionAccordingToType(sampleConsumptions, 'year');
-      const resultMonth = getConsumptionAccordingToType(sampleConsumptions, 'month');
-      const resultWeek = getConsumptionAccordingToType(sampleConsumptions, 'week');
-      const resultDay = getConsumptionAccordingToType(sampleConsumptions.slice(0, 5), 'day'); // first day of the week sample
+      const resultYear = calculateRange(sampleConsumptions);
+      const resultMonth = calculateRange(sampleConsumptions);
+      const resultWeek = calculateRange(sampleConsumptions);
+      const resultDay = calculateRange(sampleConsumptions.slice(0, 5)); // first day of the week sample
 
       expect(resultYear).toEqual({
         "10": 1220
@@ -522,10 +522,10 @@ describe('get consumption [user]', () => {
     });
 
     it('should get the calulated value of consumption each hours, day, month according to a type of range and return the serial of the product', () => {
-      const resultYear = getConsumptionAccordingToTypeWrapperSerial(sampleConsumptions, 'abc-123');
-      const resultMonth = getConsumptionAccordingToTypeWrapperSerial(sampleConsumptions, 'abc-123');
-      const resultWeek = getConsumptionAccordingToTypeWrapperSerial(sampleConsumptions, 'abc-123');
-      const resultDay = getConsumptionAccordingToTypeWrapperSerial(sampleConsumptions.slice(0, 5), 'abc-123'); // first day of the week sample
+      const resultYear = calculateRangeWrapperSerial(sampleConsumptions, 'abc-123');
+      const resultMonth = calculateRangeWrapperSerial(sampleConsumptions, 'abc-123');
+      const resultWeek = calculateRangeWrapperSerial(sampleConsumptions, 'abc-123');
+      const resultDay = calculateRangeWrapperSerial(sampleConsumptions.slice(0, 5), 'abc-123'); // first day of the week sample
 
       expect(resultYear).toEqual({
         'abc-123': {"10": 1220}
