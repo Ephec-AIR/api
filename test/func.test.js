@@ -16,15 +16,17 @@ const sampleConsumptions = require('../data'); // data
 
 describe('[UNIT TEST] get consumption functions', () => {
   it('should subtract a date according to a type of range (year, month, week, day)', () => {
-    const yearSubtract = subtractAccordingToType(new Date(), 'year');
-    const monthSubtract = subtractAccordingToType(new Date(), 'month');
-    const weekSubtract = subtractAccordingToType(new Date(), 'week');
-    const daySubtract = subtractAccordingToType(new Date(), 'day');
+    const d = new Date();
 
-    expect(yearSubtract).toBe(subYears(new Date(), 1));
-    expect(monthSubtract).toBe(subMonths(new Date(), 1));
-    expect(weekSubtract).toBe(subWeeks(new Date(), 1));
-    expect(daySubtract).toBe(subDays(new Date(), 1));
+    const yearSubtract = subtractAccordingToType(d, 'year');
+    const monthSubtract = subtractAccordingToType(d, 'month');
+    const weekSubtract = subtractAccordingToType(d, 'week');
+    const daySubtract = subtractAccordingToType(d, 'day');
+
+    expect(yearSubtract.getTime()).toBe(subYears(d, 1).getTime());
+    expect(monthSubtract.getTime()).toBe(subMonths(d, 1).getTime());
+    expect(weekSubtract.getTime()).toBe(subWeeks(d, 1).getTime());
+    expect(daySubtract.getTime()).toBe(subDays(d, 1).getTime());
   });
 
   it('should get an index (day, week, hour) according to a type of range (year, month, week, day)', () => {
@@ -33,17 +35,17 @@ describe('[UNIT TEST] get consumption functions', () => {
     const weekIndex = getRangeIndex(new Date(), 'week');
     const dayIndex = getRangeIndex(new Date(), 'day');
 
-    expect(yearSubtract).toBe(new Date().getMonth());
-    expect(monthSubtract).toBe(new Date().getDate());
-    expect(weekSubtract).toBe(new Date().getDay());
-    expect(daySubtract).toBe(new Date().getHours());
+    expect(yearIndex).toBe(new Date().getMonth());
+    expect(monthIndex).toBe(new Date().getDate());
+    expect(weekIndex).toBe(new Date().getDay()); // first day begins sunday in date api
+    expect(dayIndex).toBe(new Date().getHours());
   });
 
   it('should get get the start and end value of a consumption each hours, day, month according to a type of range', () => {
     const resultYear = getConsumptionAccordingToType(sampleConsumptions, 'year');
     const resultMonth = getConsumptionAccordingToType(sampleConsumptions, 'month');
     const resultWeek = getConsumptionAccordingToType(sampleConsumptions, 'week');
-    const resultDay = getConsumptionAccordingToType(sampleConsumptions.slice(0, 5), 'day'); // first day of the week sample
+    const resultDay = getConsumptionAccordingToType(sampleConsumptions.slice(0, 4), 'day'); // first day of the week sample
 
     expect(resultYear).toEqual({
       "10": {start: 300, end: 1520}
@@ -60,13 +62,13 @@ describe('[UNIT TEST] get consumption functions', () => {
     });
 
     expect(resultWeek).toEqual({
-      "0": {start: 300, end: 450},
-      "1": {start: 510, end: 610},
-      "2": {start: 630, end: 705},
-      "3": {start: 710, end: 820},
-      "4": {start: 850, end: 1000},
-      "5": {start: 1100, end: 1410},
-      "6": {start: 1435, end: 1520}
+      "1": {start: 300, end: 450},
+      "2": {start: 510, end: 610},
+      "3": {start: 630, end: 705},
+      "4": {start: 710, end: 820},
+      "5": {start: 850, end: 1000},
+      "6": {start: 1100, end: 1410},
+      "0": {start: 1435, end: 1520}
     });
 
     expect(resultDay).toEqual({
@@ -78,10 +80,10 @@ describe('[UNIT TEST] get consumption functions', () => {
   });
 
   it('should get the calulated value of consumption each hours, day, month according to a type of range', () => {
-    const resultYear = calculateRange(sampleConsumptions);
-    const resultMonth = calculateRange(sampleConsumptions);
-    const resultWeek = calculateRange(sampleConsumptions);
-    const resultDay = calculateRange(sampleConsumptions.slice(0, 5)); // first day of the week sample
+    const resultYear = calculateRange(getConsumptionAccordingToType(sampleConsumptions, 'year'));
+    const resultMonth = calculateRange(getConsumptionAccordingToType(sampleConsumptions, 'month'));
+    const resultWeek = calculateRange(getConsumptionAccordingToType(sampleConsumptions, 'week'));
+    const resultDay = calculateRange(getConsumptionAccordingToType(sampleConsumptions.slice(0, 4), 'day')); // first day of the week sample
 
     expect(resultYear).toEqual({
       "10": 1220
@@ -98,13 +100,13 @@ describe('[UNIT TEST] get consumption functions', () => {
     });
 
     expect(resultWeek).toEqual({
-      "0": 150,
-      "1": 100,
-      "2": 75,
-      "3": 110,
-      "4": 150,
-      "5": 310,
-      "6": 85
+      "1": 150,
+      "2": 100,
+      "3": 75,
+      "4": 110,
+      "5": 150,
+      "6": 310,
+      "0": 85
     });
 
     // REVOIR L'IMPLEMENTATION (calculer start - end de l'heure précédente)
@@ -117,10 +119,10 @@ describe('[UNIT TEST] get consumption functions', () => {
   });
 
   it('should get get the start and end value of a consumption each hours, day, month according to a type of range and return the serial of the product', () => {
-    const resultYear = getConsumptionAccordingToTypeWrapperSerial(sampleConsumptions);
-    const resultMonth = getConsumptionAccordingToTypeWrapperSerial(sampleConsumptions);
-    const resultWeek = getConsumptionAccordingToTypeWrapperSerial(sampleConsumptions);
-    const resultDay = getConsumptionAccordingToTypeWrapperSerial(sampleConsumptions.slice(0, 5)); // first day of the week sample
+    const resultYear = getConsumptionAccordingToTypeWrapperSerial(sampleConsumptions, 'year', 'abc-123');
+    const resultMonth = getConsumptionAccordingToTypeWrapperSerial(sampleConsumptions, 'month', 'abc-123');
+    const resultWeek = getConsumptionAccordingToTypeWrapperSerial(sampleConsumptions, 'week', 'abc-123');
+    const resultDay = getConsumptionAccordingToTypeWrapperSerial(sampleConsumptions.slice(0, 4), 'day', 'abc-123'); // first day of the week sample
 
     expect(resultYear).toEqual({
       "10": {start: 300, end: 1520}
@@ -137,13 +139,13 @@ describe('[UNIT TEST] get consumption functions', () => {
     });
 
     expect(resultWeek).toEqual({
-      "0": {start: 300, end: 450},
-      "1": {start: 510, end: 610},
-      "2": {start: 630, end: 705},
-      "3": {start: 710, end: 820},
-      "4": {start: 850, end: 1000},
-      "5": {start: 1100, end: 1410},
-      "6": {start: 1435, end: 1520}
+      "1": {start: 300, end: 450},
+      "2": {start: 510, end: 610},
+      "3": {start: 630, end: 705},
+      "4": {start: 710, end: 820},
+      "5": {start: 850, end: 1000},
+      "6": {start: 1100, end: 1410},
+      "0": {start: 1435, end: 1520}
     });
 
     expect(resultDay).toEqual({
@@ -155,10 +157,10 @@ describe('[UNIT TEST] get consumption functions', () => {
   });
 
   it('should get the calulated value of consumption each hours, day, month according to a type of range and return the serial of the product', () => {
-    const resultYear = calculateRangeWrapperSerial(sampleConsumptions, 'abc-123');
-    const resultMonth = calculateRangeWrapperSerial(sampleConsumptions, 'abc-123');
-    const resultWeek = calculateRangeWrapperSerial(sampleConsumptions, 'abc-123');
-    const resultDay = calculateRangeWrapperSerial(sampleConsumptions.slice(0, 5), 'abc-123'); // first day of the week sample
+    const resultYear = calculateRangeWrapperSerial(getConsumptionAccordingToType(sampleConsumptions, 'year'), 'abc-123');
+    const resultMonth = calculateRangeWrapperSerial(getConsumptionAccordingToType(sampleConsumptions, 'month'), 'abc-123');
+    const resultWeek = calculateRangeWrapperSerial(getConsumptionAccordingToType(sampleConsumptions, 'week'), 'abc-123');
+    const resultDay = calculateRangeWrapperSerial(getConsumptionAccordingToType(sampleConsumptions.slice(0, 4), 'day'), 'abc-123'); // first day of the week sample
 
     expect(resultYear).toEqual({
       'abc-123': {"10": 1220}
@@ -178,13 +180,13 @@ describe('[UNIT TEST] get consumption functions', () => {
 
     expect(resultWeek).toEqual({
       'abc-123': {
-        "0": 150,
-        "1": 100,
-        "2": 75,
-        "3": 110,
-        "4": 150,
-        "5": 310,
-        "6": 85
+        "1": 150,
+        "2": 100,
+        "3": 75,
+        "4": 110,
+        "5": 150,
+        "6": 310,
+        "0": 85
       }
     });
 
@@ -199,7 +201,8 @@ describe('[UNIT TEST] get consumption functions', () => {
   });
 
   it('should calculate an average value of consumption', () => {
-    const resultMonth = getConsumptionAccordingToTypeWrapperSerial(sampleConsumptions, 'abc-123');
+    const resultMonth = getConsumptionAccordingToTypeWrapperSerial(sampleConsumptions, 'month', 'abc-123');
+    console.log(resultMonth);
     const result = calculateAverage(resultMonth);
     expect(result).toEqual({
       serial: 'abc-123',

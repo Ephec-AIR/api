@@ -2,6 +2,13 @@ const {subYears, subMonths, subWeeks, subDays} = require('date-fns');
 const User = require('../models/User');
 const Product = require('../models/Product');
 const Consumption = require('../models/Consumption');
+const suppliersPriceKWH = {
+  'EDF Luminus': 6.02,
+  'Engie Electrabel': 6.34,
+  'Eni': 5.04,
+  'Essent': 6.92,
+  'Lampiris': 5.23
+};
 
 async function add(req, res) {
   const {serial, value} = req.body;
@@ -28,7 +35,22 @@ async function get(req, res) {
     .map(consumption => getConsumptionAccordingToType(consumption, type))
     .map(consumption => calculateRange(consumption))
 
-  res.status(200).json(Normalizedconsumptions);
+  //[prix d'avant, prix de maintenant]
+  const prices = Normalizedconsumptions.map(consumption => {
+    const total = Object.keys(consumption).reduce((prev, range) => prev += consumption[range], 0);
+    return total * suppliersPriceKWH[req.user.supplier];
+  });
+
+  res.status(200).json({
+    before: {
+      values: Normalizedconsumptions[0],
+      price: prices[1]
+    },
+    now: {
+      values: Normalizedconsumptions[1],
+      price: prices[1]
+    }
+  });
 }
 
 async function match(req, res) {
@@ -56,7 +78,7 @@ function getRangeIndex (date, type) {
   const types = {
     'year': date => date.getMonth(),
     'month': date => date.getDate(),
-    'week': date => date.getDay(),
+    'week': date => date.getDay(), // first day begins sunday in date api !
     'day': date => date.getHours()
   };
   return types[type](date);
@@ -69,13 +91,13 @@ function getConsumptionAccordingToTypeWrapperSerial(consumption, type, serial) {
 
 function calculateRangeWrapperSerial(consumption, serial) {
   const object = {};
-  return object[serial] = calculateAverage(consumption);
+  return object[serial] = calculateRange(consumption);
 }
 
 /**
  *
- * @param {*} consumption
- * @param {*} type
+ * @param {Array} consumption
+ * @param {String} type
  * @returns {Object} {"0": {start: 300, end: 400}, "1": {start: 400, end: 500},...}
  */
 function getConsumptionAccordingToType (consumption, type) {
@@ -107,6 +129,12 @@ function calculateRange(rangeConsumption) {
   }, {});
 }
 
+/**
+ *
+ * @param {*} start
+ * @param {*} end
+ * @param {*} type, type year, month, week, day
+ */
 async function matching (start, end, type) {
   const regionConsumption =
     await Consumption.find({serial: {postalCode: req.user.postalCode}, date: {$gte: start, $lte: end}});
@@ -123,7 +151,7 @@ async function matching (start, end, type) {
     } else {
       prev[serial] = [];
     }
-    return prev
+    return prev;
   }, {});
 
   const rangeConsumption = Object.keys(consumptionGroupedBySerial)
@@ -137,8 +165,8 @@ async function matching (start, end, type) {
 
   const sortedAverages = averages.sort((a, b) => b.value - a.value);
   const best = sortedAverages[0];
-  const {userId} = await User.find({serial: best.serial}); // find the user associated with the serial
-  return {...best, userId, values: totalConsumption.find(consumption.serial === best.serial)};
+  const {username} = await User.find({serial: best.serial}); // find the user associated with the serial
+  return {...best, username, values: totalConsumption.find(consumption.serial === best.serial)};
 }
 
 /**
@@ -148,7 +176,7 @@ async function matching (start, end, type) {
  */
 function calculateAverage(consumption) {
   const serial = Object.keys(consumption);
-  const consumptionIdx = Object.values(consumption.serial);
+  const consumptionIdx = Object.values(consumption[serial]);
   const average = Math.round(consumptionIdx.reduce((prev, current) => prev += current, 0) / consumptionIdx.length);
   return {serial, average}
 }
@@ -157,12 +185,12 @@ module.exports = {
   addConsumtion: add,
   getConsumption: get,
   match,
+  matching,
   subtractAccordingToType,
   getRangeIndex,
   getConsumptionAccordingToType,
   getConsumptionAccordingToTypeWrapperSerial,
   calculateRange,
   calculateRangeWrapperSerial,
-  matching,
   calculateAverage
 };

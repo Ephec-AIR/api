@@ -26,9 +26,10 @@ async function login(req, res) {
   if (!user) {
     user = await new User({
       userId: data.uid,
+      username: data.username
     }).save();
   }
-  const token = user.generateJWT(data.username);
+  const token = user.generateJWT();
   res.status(200).json({token})
 }
 

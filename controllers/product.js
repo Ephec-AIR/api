@@ -13,16 +13,26 @@ async function create(req, res) {
   res.status(200).json(simpleProductJson(product));
 }
 
-async function setPostalCode(req, res) {
-  const product = await Product.findOne({serial: req.user.serial})
-  product.postalCode = req.body.postalCode;
-  await product.save();
-
+async function update(req, res) {
+  const {supplier, postalCode} = req.body;
+  const promises = await Promise.all([setSupplier, postalCode]);
   const user = await User.findOne({userId: req.user.userId});
 
   // regenerate jwt
   const token = user.generateJWT(req.user.username);
   res.status(200).json({token});
+}
+
+async function setSupplier(supplier) {
+  const user = await User.findOne({serial: req.user.serial});
+  user.supplier = supplier;
+  await user.save();
+}
+
+async function setPostalCode(postalCode) {
+  const product = await Product.findOne({serial: req.user.serial})
+  product.postalCode = postalCode;
+  await product.save();
 }
 
 function simpleProductJson(product) {

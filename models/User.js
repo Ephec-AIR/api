@@ -8,8 +8,23 @@ const UserSchema = new mongoose.Schema({
     required: 'please supply a userId',
     unique: true
   },
+  username: {
+    type: String,
+    required: 'please supply a username',
+    unique: true
+  },
   serial: {
     type: String
+  },
+  supplier: {
+    type: 'String',
+    enum: [
+      'EDF Luminus',
+      'Engie Electrabel',
+      'Eni',
+      'Essent',
+      'Lampiris'
+    ]
   },
   isAdmin: {
     type: Boolean,
@@ -34,14 +49,14 @@ UserSchema.virtual('user_product', {
  * plus the username given by NodeBB during the authentication.
  * If the user is not linked to an OCR yet, replace the ocr's serial with null.
  */
-UserSchema.methods.generateJWT = function(username) {
+UserSchema.methods.generateJWT = function() {
   return jwt.sign({
       userId: this.userId,
+      username: this.username,
       isAdmin: this.isAdmin,
       serial: this.user_product.serial || null,
       user_secret: this.user_product.user_secret || null,
-      postalCode: this.user_product.postalCode || null,
-      username
+      postalCode: this.user_product.postalCode || null
   }, JWT_SECRET, {
     expiresIn: '1day',
     subject: 'air'

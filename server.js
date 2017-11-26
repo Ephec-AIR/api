@@ -12,7 +12,7 @@ const {parseJWT, onlyAdmin, doUserOwn, onlyActiveOCR, onlySyncedUser} = require(
 const {requireFields, requireQuery} = require('./middlewares/validator');
 const {login, sync} = require('./controllers/auth');
 const {addConsumtion, getConsumption, match} = require('./controllers/consumption');
-const {createProduct, setPostalCode} = require('./controllers/product');
+const {createProduct, update} = require('./controllers/product');
 const app = express();
 
 const PORT = process.env.PORT || 3000;
@@ -41,7 +41,7 @@ app.post('/sync', parseJWT, requireFields("serial", "user_secret"), catchErrors(
 app.put('/consumption', requireFields("ocr_secret", "serial", "value"), catchErrors(onlyActiveOCR), catchErrors(addConsumtion));
 app.get('/consumption', parseJWT, onlySyncedUser, requireQuery("start", "end", "type"), catchErrors(getConsumption));
 app.post('/product', parseJWT, onlyAdmin, catchErrors(createProduct));
-app.put('/product', parseJWT, onlySyncedUser, catchErrors(setPostalCode));
+app.put('/product', parseJWT, onlySyncedUser, requireFields('postalCode', 'supplier'), catchErrors(update));
 app.get('/match', parseJWT, onlySyncedUser, requireQuery("start", "end", "type"), catchErrors(match));
 
 let HTTPServer = http.createServer(app);
