@@ -39,11 +39,11 @@ async function get(req, res) {
   res.status(200).json({
     before: {
       values: beforeCpt,
-      price: calculatePrice(beforeCpt);
+      price: calculatePrice(beforeCpt)
     },
     now: {
       values: nowCpt,
-      price: calculateAndPredictPriceIfNeeded(beforeCpt, nowCpt);
+      price: calculateAndPredictPriceIfNeeded(beforeCpt, nowCpt)
     }
   });
 }

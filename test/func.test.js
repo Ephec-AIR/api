@@ -125,34 +125,46 @@ describe('[UNIT TEST] get consumption functions', () => {
     const resultDay = getConsumptionAccordingToTypeWrapperSerial(sampleConsumptions.slice(0, 4), 'day', 'abc-123'); // first day of the week sample
 
     expect(resultYear).toEqual({
-      "10": {start: 300, end: 1520}
+      serial: 'abc-123',
+      values: {
+        "10": {start: 300, end: 1520}
+      }
     });
 
     expect(resultMonth).toEqual({
-      "13": {start: 300, end: 450},
-      "14": {start: 510, end: 610},
-      "15": {start: 630, end: 705},
-      "16": {start: 710, end: 820},
-      "17": {start: 850, end: 1000},
-      "18": {start: 1100, end: 1410},
-      "19": {start: 1435, end: 1520}
+      serial: 'abc-123',
+      values: {
+        "13": {start: 300, end: 450},
+        "14": {start: 510, end: 610},
+        "15": {start: 630, end: 705},
+        "16": {start: 710, end: 820},
+        "17": {start: 850, end: 1000},
+        "18": {start: 1100, end: 1410},
+        "19": {start: 1435, end: 1520}
+      }
     });
 
     expect(resultWeek).toEqual({
-      "1": {start: 300, end: 450},
-      "2": {start: 510, end: 610},
-      "3": {start: 630, end: 705},
-      "4": {start: 710, end: 820},
-      "5": {start: 850, end: 1000},
-      "6": {start: 1100, end: 1410},
-      "0": {start: 1435, end: 1520}
+      serial: 'abc-123',
+      values: {
+        "1": {start: 300, end: 450},
+        "2": {start: 510, end: 610},
+        "3": {start: 630, end: 705},
+        "4": {start: 710, end: 820},
+        "5": {start: 850, end: 1000},
+        "6": {start: 1100, end: 1410},
+        "0": {start: 1435, end: 1520}
+      }
     });
 
     expect(resultDay).toEqual({
-      "12": {start: 300},
-      "13": {start: 350},
-      "14": {start: 400},
-      "15": {start: 450}
+      serial: 'abc-123',
+      values: {
+        "12": {start: 300},
+        "13": {start: 350},
+        "14": {start: 400},
+        "15": {start: 450}
+      }
     });
   });
 
@@ -167,7 +179,8 @@ describe('[UNIT TEST] get consumption functions', () => {
     });
 
     expect(resultMonth).toEqual({
-      'abc-123': {
+      serial: 'abc-123',
+      values: {
         "13": 150,
         "14": 100,
         "15": 75,
@@ -179,7 +192,8 @@ describe('[UNIT TEST] get consumption functions', () => {
     });
 
     expect(resultWeek).toEqual({
-      'abc-123': {
+      serial: 'abc-123',
+      values: {
         "1": 150,
         "2": 100,
         "3": 75,
@@ -191,7 +205,8 @@ describe('[UNIT TEST] get consumption functions', () => {
     });
 
     expect(resultDay).toEqual({
-      'abc-123': {
+      serial: 'abc-123',
+      values: {
         "12": 0,
         "13": 50,
         "14": 50,
