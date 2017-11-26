@@ -2,7 +2,8 @@ const {subYears, subMonths, subWeeks, subDays} = require('date-fns');
 const User = require('../models/User');
 const Product = require('../models/Product');
 const Consumption = require('../models/Consumption');
-const suppliersPriceKWH = {
+// https://www.killmybill.be/fr/tarifs-electricite-belgique/
+const SUPPLIERS_PRICE_KWH = {
   'EDF Luminus': 6.02,
   'Engie Electrabel': 6.34,
   'Eni': 5.04,
@@ -31,24 +32,18 @@ async function get(req, res) {
     Consumption.find({serial: req.user.serial, date: {$gte: start, $lte: end}})
   ]);
 
-  const Normalizedconsumptions = consumptions
+  const [beforeCpt, nowCpt] = consumptions
     .map(consumption => getConsumptionAccordingToType(consumption, type))
     .map(consumption => calculateRange(consumption))
 
-  //[prix d'avant, prix de maintenant]
-  const prices = Normalizedconsumptions.map(consumption => {
-    const total = Object.keys(consumption).reduce((prev, range) => prev += consumption[range], 0);
-    return total * suppliersPriceKWH[req.user.supplier];
-  });
-
   res.status(200).json({
     before: {
-      values: Normalizedconsumptions[0],
-      price: prices[1]
+      values: beforeCpt,
+      price: calculatePrice(beforeCpt);
     },
     now: {
-      values: Normalizedconsumptions[1],
-      price: prices[1]
+      values: nowCpt,
+      price: calculateAndPredictPriceIfNeeded(beforeCpt, nowCpt);
     }
   });
 }
@@ -57,6 +52,35 @@ async function match(req, res) {
   const {start, end, type} = req.query;
   const result = await matching(start, end, type);
   res.status(200).json(result);
+}
+
+/**
+ *
+ * @param {Object} consumption {"0": 100, "1": 200}
+ * @returns {Number} price the price that costs your consumption according to the supplier you are subscribed
+ */
+function calculatePrice (consumption) {
+  const total = Object.keys(consumption).reduce((prev, range) => prev += consumption[range], 0);
+  return total * SUPPLIERS_PRICE_KWH[req.user.supplier];
+}
+
+/**
+ * @param {Object} beforeCpt past consumption {"0": 100, "1": 200}
+ * @param {Object} nowCpt now consumption {"0": 100, "1": 200}
+ * @returns {Number} price the price that costs your consumption according to the supplier you are subscribed
+ */
+function calculateAndPredictPriceIfNeeded (beforeCpt, nowCpt) {
+  let consumption = Object.values(nowCpt);
+  const diff = Object.keys(beforeCpt).length - Object.keys(nowCpt).length;
+  if (diff > 0) {
+    const {average} = calculateAverage(nowCpt);
+    for (let i = 0; i < diff; i++) {
+      consumption.push(average);
+    }
+  }
+
+  const total = consumption.reduce((prev, value) => prev += value, 0);
+  return total * SUPPLIERS_PRICE_KWH[req.user.supplier];
 }
 
 /**
@@ -82,16 +106,15 @@ function getRangeIndex (date, type) {
     'day': date => date.getHours()
   };
   return types[type](date);
-};
-
-function getConsumptionAccordingToTypeWrapperSerial(consumption, type, serial) {
-  const object = {};
-  return object[serial] = getConsumptionAccordingToType(consumption, type);
 }
 
-function calculateRangeWrapperSerial(consumption, serial) {
-  const object = {};
-  return object[serial] = calculateRange(consumption);
+function getConsumptionAccordingToTypeWrapperSerial(consumption, type, serial) {
+  const values = getConsumptionAccordingToType(consumption, type);
+  return {serial, values};
+}
+
+function calculateRangeWrapperSerial({serial, values}) {
+  return {serial, values: calculateRange(values)};
 }
 
 /**
@@ -142,10 +165,6 @@ async function matching (start, end, type) {
   // {"123-abc": [{date: ..., value: ...}, {}],...}
   const consumptionGroupedBySerial = regionConsumption.reduce((prev, current) => {
     const serial = current.serial.serial;
-    if (serial === req.user.serial) {
-      return prev;
-    }
-
     if (prev[serial]) {
       prev[serial].push({date: current.date, value: current.value});
     } else {
@@ -158,27 +177,41 @@ async function matching (start, end, type) {
     .map(serial => getConsumptionAccordingToTypeWrapperSerial(consumptionGroupedBySerial[serial], type, serial));
 
   const totalConsumption = rangeConsumption
-    .map(consumption => calculateRangeWrapperSerial(consumption[serial], Object.keys(consumption)));
+    .map(consumption => calculateRangeWrapperSerial(consumption));
 
   const averages = totalConsumption
-    .map(consumption => calculateAverage(consumption));
+    .map(consumption => calculateAverageWrapperSerial(consumption));
 
+  // sort averages
   const sortedAverages = averages.sort((a, b) => b.value - a.value);
-  const best = sortedAverages[0];
-  const {username} = await User.find({serial: best.serial}); // find the user associated with the serial
-  return {...best, username, values: totalConsumption.find(consumption.serial === best.serial)};
+  // find the averages better than you
+  const bests = sortedAverages.slice(0, sortedAverages.findIndex(avg => avg.serial === req.user.serial));
+  // pick up one
+  const best = bests[Math.floor(Math.random() * (bests.length - 1))];
+  // get his username
+  const {username} = await User.find({serial: best.serial});
+  return {...best, username, values: totalConsumption.find(consumption => consumption.serial === best.serial)};
 }
 
 /**
  * calculate the average consumption for a date range given
- * @param {*} consumption with ranges calculated {"abc-123: {"0": 100, "1": 200}}
+ * @param {Object} consumption with ranges calculated {serial: "abc-123, values: {"0": 100, "1": 200}}
  * @returns {Object} {serial: "abc-123": value: 150}
  */
+function calculateAverageWrapperSerial({serial, values}) {
+  const average = calculateAverage(values);
+  return {serial, average};
+}
+
+/**
+ * calculate the average consumption for a date range given
+ * @param {Object} consumption with ranges calculated {"0": 100, "1": 200}
+ * @returns {Object} {value: 150}
+ */
 function calculateAverage(consumption) {
-  const serial = Object.keys(consumption);
   const consumptionIdx = Object.values(consumption[serial]);
   const average = Math.round(consumptionIdx.reduce((prev, current) => prev += current, 0) / consumptionIdx.length);
-  return {serial, average}
+  return {average};
 }
 
 module.exports = {
