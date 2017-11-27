@@ -1,5 +1,5 @@
 const {randomHelper} = require('./utils');
-const {eachDay, subWeeks, addWeeks} = require('date-fns');
+const {eachDay, addHours, subDays, subWeeks, addWeeks} = require('date-fns');
 let consumptions = [];
 let start = 300;
 const NBR_VALUES_BY_DAY = 24;
@@ -123,32 +123,36 @@ const MAX_CPT_PER_HOUR = 200;
 ];*/
 
 function generateSample() {
+  let dateRange;
   const now = new Date();
 
   // 1 week before
   // https://date-fns.org/v1.29.0/docs/eachDay
-  const dateRange = eachDay(now, subWeeks(now, 1));
-  generateValues();
+  dateRange = eachDay(subWeeks(now, 1), subDays(now, 1));
+  generateValues(dateRange);
 
   // 1 week now
   // https://date-fns.org/v1.29.0/docs/eachDay
-  const dateRange = eachDay(now, addWeeks(now, 1));
-  generateValues();
+  dateRange = eachDay(now, addWeeks(now, 1));
+  generateValues(dateRange);
 
   return consumptions;
 }
 
-function generateValues() {
+function generateValues(dateRange) {
   for (const date of dateRange) {
     for (let i = 0; i < NBR_VALUES_BY_DAY; i++) {
-      const cpt = randomHelper(start, MAX_CPT_PER_HOUR);
+      const cpt = randomHelper(0, MAX_CPT_PER_HOUR);
       consumptions.push({
-        date: addHours(date, 1),
-        value: start + cpt
+        date: addHours(date, i),
+        value: start + cpt,
+        serial: 0
       });
       start += cpt;
     }
   }
 }
+
+generateSample();
 
 module.exports = generateSample;

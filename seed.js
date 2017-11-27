@@ -21,7 +21,7 @@ async function generateProduct() {
 function seed() {
   return cleanDB().then(async () => {
     await insert('toto', 'test123');
-    await insert('toto2', 'test123');
+    await insert('Christian', 'test123');
   });
 }
 
@@ -32,7 +32,10 @@ async function insert(user, password) {
       const {token} = await logUser(user, password);
       await syncUser(product.serial, product.user_secret, token);
     }
-    const sampleConsumptionsWithSerial = generateSample().map(c => c['serial'] = product.serial);
+    const sampleConsumptionsWithSerial = generateSample().map(consumption => {
+      consumption.serial = product.serial;
+      return consumption;
+    });
     Consumption.insertMany(sampleConsumptionsWithSerial).then(() => process.exit(0));
   });
 }
