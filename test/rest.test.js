@@ -225,7 +225,7 @@ describe('product update [user]', () => {
     return request(app)
       .put('/product')
       .set('authorization', `Bearer ${response.body.token}`)
-      .send({postalCode: '1340'})
+      .send({postalCode: '1340', supplier: 'Eni'})
       .expect(200);
   });
 });
@@ -314,7 +314,7 @@ describe('add consumption [ocr]', () => {
 });
 
 describe('get consumption [user]', () => {
-  it('should get a list of consumptions if the product requested is sync with the user', async () => {
+  it('should get a list of consumptions + price if the product requested is sync with the user', async () => {
     // user should be sync with product
     // based on previous tests
     const user = await User.findOne({userId});
@@ -348,24 +348,49 @@ describe('get consumption [user]', () => {
 
     expect(response.status).toBe(200);
     //expect(response.body).toMatchSnapshot();
-    // expect(response.body[new Date().getMonth()]).toEqual(expect.objectContaining({
-    //   start: expect.any(Number),
-    //   end: expect.any(Number)
-    // }));
+    expect(response.body).toEqual(expect.objectContaining({
+      before: {
+        values: expect.any(Object),
+        price: expect.any(Number)
+      },
+      now: {
+        values: expect.any(Object),
+        price: expect.any(Number)
+      }
+    }));
   });
 
   it('should send a status 412 if the user is not sync with the product [no serial in jwt]', async () => {
     // unsync user with product
     const user = await User.findOne({userId});
-    const token = user.generateJWT(username);
+    const token = user.generateJWT();
 
     user.serial = null;
     const unSyncUser = await user.save();
-    const unSyncToken = unSyncUser.generateJWT(username);
+    const unSyncToken = unSyncUser.generateJWT();
 
     return request(app)
       .get('/consumption')
       .set('authorization', `Bearer ${unSyncToken}`)
       .expect(412);
+  });
+});
+
+describe('matching [user]', () => {
+  it('should match your consumption with other people of your region', async () => {
+    const user = await User.findOne({userId});
+    const token = user.generateJWT();
+
+    const response = await request(app)
+      .get('/match')
+      .set('authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(expect.objectContaining({
+      serial: expect.any(String),
+      value: expect.any(Number),
+      username: expect.any(String),
+      values: expect.any(Object)
+    }));
   });
 });

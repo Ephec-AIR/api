@@ -153,6 +153,4 @@ function generateValues(dateRange) {
   }
 }
 
-generateSample();
-
 module.exports = generateSample;

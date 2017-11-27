@@ -49,10 +49,11 @@ UserSchema.virtual('user_product', {
  * plus the username given by NodeBB during the authentication.
  * If the user is not linked to an OCR yet, replace the ocr's serial with null.
  */
-UserSchema.methods.generateJWT = function() {
+UserSchema.methods.generateJWT = function () {
   return jwt.sign({
       userId: this.userId,
       username: this.username,
+      supplier: this.supplier,
       isAdmin: this.isAdmin,
       serial: this.user_product.serial || null,
       user_secret: this.user_product.user_secret || null,

@@ -138,7 +138,7 @@ function getConsumptionAccordingToType (consumption, type) {
 
 /**
  *
- * @param {*} rangeConsumption
+ * @param {Object} rangeConsumption
  * @returns {Object} {"0": 100, "1": 200}
  */
 function calculateRange(rangeConsumption) {
@@ -157,9 +157,9 @@ function calculateRange(rangeConsumption) {
 
 /**
  *
- * @param {*} start
- * @param {*} end
- * @param {*} type, type year, month, week, day
+ * @param {Date} start
+ * @param {Date} end
+ * @param {String} type, type year, month, week, day
  */
 async function matching (start, end, type) {
   const regionConsumption =
@@ -193,7 +193,7 @@ async function matching (start, end, type) {
   const best = bests[Math.floor(Math.random() * (bests.length - 1))];
   // get his username
   const {username} = await User.find({serial: best.serial});
-  return {...best, username, values: totalConsumption.find(consumption => consumption.serial === best.serial)};
+  return {...best, username, values: (totalConsumption.find(consumption => consumption.serial === best.serial)).values};
 }
 
 /**
