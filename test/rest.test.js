@@ -51,6 +51,7 @@ afterAll(() => {
 describe('authentication [user]', () => {
   it('should login a user who has an account on the forum', async () => {
     const response = await request(app).post('/login').send({username, password});
+    console.log(decodedToken);
     const decodedToken = await decodeToken(response.body.token);
     userId = decodedToken.userId;
 
