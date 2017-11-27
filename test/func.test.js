@@ -15,7 +15,7 @@ const {
   calculateAverageWrapperSerial
 } = require('../controllers/consumption');
 
-const sampleConsumptions = require('../data'); // data
+const {hardcoded: sampleConsumptions} = require('../data'); // data
 
 describe('[UNIT TEST] get consumption functions', () => {
   it('should subtract a date according to a type of range (year, month, week, day)', () => {
@@ -112,7 +112,6 @@ describe('[UNIT TEST] get consumption functions', () => {
       "0": 85
     });
 
-    // REVOIR L'IMPLEMENTATION (calculer start - end de l'heure précédente)
     expect(resultDay).toEqual({
       "12": 0,
       "13": 50,

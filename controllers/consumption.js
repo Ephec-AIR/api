@@ -187,6 +187,7 @@ async function matching (start, end, type) {
 
   // sort averages
   const sortedAverages = averages.sort((a, b) => b.value - a.value);
+  console.log(sortedAverages);
   // find the averages better than you
   const bests = sortedAverages.slice(0, sortedAverages.findIndex(avg => avg.serial === req.user.serial));
   // pick up one

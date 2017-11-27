@@ -41,7 +41,7 @@ async function sync(req, res) {
   await user.save();
 
   // regenerate jwt
-  const token = user.generateJWT(req.user.username);
+  const token = user.generateJWT();
   res.status(200).json({token});
 }
 

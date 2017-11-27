@@ -33,7 +33,7 @@ const UserSchema = new mongoose.Schema({
 }, {toJSON: {virtuals: true}});
 
 UserSchema.index({userId: 1}, {unique: true});
-UserSchema.pre('findOne', autopopulate);
+//UserSchema.pre('findOne', autopopulate);
 
 UserSchema.virtual('user_product', {
   ref: 'Product', // The model to use
@@ -55,9 +55,9 @@ UserSchema.methods.generateJWT = function () {
       username: this.username,
       supplier: this.supplier,
       isAdmin: this.isAdmin,
-      serial: this.user_product.serial || null,
-      user_secret: this.user_product.user_secret || null,
-      postalCode: this.user_product.postalCode || null
+      serial: this.serial ? this.serial : null,
+      user_secret: this.serial ? this.serial.user_secret : null,
+      postalCode: this.serial ? this.serial.postalCode : null
   }, JWT_SECRET, {
     expiresIn: '1day',
     subject: 'air'

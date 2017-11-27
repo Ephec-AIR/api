@@ -6,7 +6,7 @@ const NBR_VALUES_BY_DAY = 24;
 const MAX_CPT_PER_HOUR = 200;
 
 // 1 week consumptions
-/*const consumptions = [
+const hardcoded = [
   {
     date: new Date(2017, 10, 13, 12),
     value: 300,
@@ -43,7 +43,7 @@ const MAX_CPT_PER_HOUR = 200;
     date: new Date(2017, 10, 15, 12),
     value: 630,
     serial: 0
-  },{min = 0,
+  },{
     date: new Date(2017, 10, 15, 13),
     value: 670,
     serial: 0
@@ -120,7 +120,7 @@ const MAX_CPT_PER_HOUR = 200;
     value: 1520,
     serial: 0
   }
-];*/
+];
 
 function generateSample() {
   let dateRange;
@@ -153,4 +153,7 @@ function generateValues(dateRange) {
   }
 }
 
-module.exports = generateSample;
+module.exports = {
+  generateSample,
+  hardcoded
+}

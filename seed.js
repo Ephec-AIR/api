@@ -1,12 +1,13 @@
 const {promisify} = require('util');
 const {cleanDB} = require('./utils');
+const dotenv = require('dotenv').config();
 const uuid = require('uuid/v4');
 const crypto = require('crypto');
 const fetch = require('node-fetch');
 const Product = require('./models/Product');
 const User = require('./models/User');
 const Consumption = require('./models/Consumption');
-const generateSample = require('./data');
+const {generateSample} = require('./data');
 
 async function generateProduct() {
   const serial = uuid();
@@ -20,48 +21,36 @@ async function generateProduct() {
 
 function seed() {
   return cleanDB().then(async () => {
-    await insert('toto', 'test123');
-    await insert('Christian', 'test123');
+    await insert('toto', 'test123', "3");
+    await insert(process.env.AIR_USER, process.env.AIR_PASSWORD, "2");
   });
 }
 
-async function insert(user, password) {
+async function insert(username, password, userId) {
   const product = await generateProduct();
   Product.insertMany(product).then(async docs => {
-    if (process.argv[2] && process.argv[2] === '--sync') {
-      const {token} = await logUser(user, password);
-      await syncUser(product.serial, product.user_secret, token);
-    }
+    await createUser(username, password, userId, product, 'Eni')
     const sampleConsumptionsWithSerial = generateSample().map(consumption => {
       consumption.serial = product.serial;
       return consumption;
     });
-    Consumption.insertMany(sampleConsumptionsWithSerial).then(() => process.exit(0));
+    await Consumption.insertMany(sampleConsumptionsWithSerial);
   });
 }
 
-async function logUser(username, password) {
-  const response = await fetch('http://localhost:3000/login', {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json'
-    },
-    body: JSON.stringify({username, password})
-  });
-
-  const data = await response.json();
-  return data;
+async function createUser(username, password, userId, {serial}, supplier) {
+  return new User({
+    userId,
+    username,
+    serial,
+    supplier
+  }).save();
 }
 
-async function syncUser(serial, user_secret, token) {
-  return fetch('http://localhost:3000/sync', {
-    method: 'POST',
-    headers: {
-        'content-type': 'application/json',
-        'authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify({serial, user_secret})
-  });
+async function syncUser(username, serial) {
+  const user = await User.findOne({username});
+  user.serial = serial;
+  await user.save();
 }
 
-seed().catch(err => console.error(err));
+module.exports = seed;

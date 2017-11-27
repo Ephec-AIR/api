@@ -16,7 +16,7 @@ async function create(req, res) {
 async function update(req, res) {
   const {supplier, postalCode} = req.body;
   const promises = await Promise.all([setSupplier(req, supplier), setPostalCode(req, postalCode)]);
-  const user = await User.findOne({userId: req.user.userId});
+  const user = await User.findOne({userId: req.user.userId}).populate('user_product');
 
   // regenerate jwt
   const token = user.generateJWT(req.user.username);
@@ -45,5 +45,6 @@ function simpleProductJson(product) {
 
 module.exports = {
   createProduct: create,
+  update,
   setPostalCode
 };

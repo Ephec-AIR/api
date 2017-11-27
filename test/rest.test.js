@@ -1,14 +1,14 @@
-//const process = require('process');
 const {promisify} = require('util');
 const {app, HTTPServer} = require('../server');
 const request = require('supertest');
 const casual = require('casual'); // fake data
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const uuid = require('uuid/v4')
+const uuid = require('uuid/v4');
 const {subYears, subMonths, subWeeks, subDays} = require('date-fns'); // date helpers
 const {cleanDB} = require('../utils');
 const mongoose = require('../mongoose');
+const seed = require('../seed');
 const JWT_SECRET = process.env.JWT_SECRET;
 
 // models
@@ -16,8 +16,8 @@ const Product = require('../models/Product');
 const User = require('../models/User');
 const Consumption = require('../models/Consumption');
 
-const username = process.env.AIR_USER || "toto";
-const password = process.env.AIR_PASSWORD || "test123";
+const username = "toto";
+const password = "test123";
 const fakeSerial = casual.uuid;
 const fakeOcrSecret = "TfN3xudmtYqkJeA1kEECgbattUA";
 const fakeUserSecret = "T22FdjUjVfGvExEr";
@@ -51,7 +51,6 @@ afterAll(() => {
 describe('authentication [user]', () => {
   it('should login a user who has an account on the forum', async () => {
     const response = await request(app).post('/login').send({username, password});
-    console.log(decodedToken);
     const decodedToken = await decodeToken(response.body.token);
     userId = decodedToken.userId;
 
@@ -92,7 +91,7 @@ describe('product creation [admin]', () => {
     user.isAdmin = true;
     const admin = await user.save();
     // get admin token
-    const adminToken = admin.generateJWT(username);
+    const adminToken = admin.generateJWT();
 
     const response = await request(app)
       .post('/product')
@@ -316,27 +315,10 @@ describe('add consumption [ocr]', () => {
 
 describe('get consumption [user]', () => {
   it('should get a list of consumptions + price if the product requested is sync with the user', async () => {
-    // user should be sync with product
-    // based on previous tests
+    // insert 2 weeks data, link users
+    await seed();
     const user = await User.findOne({userId});
     const token = user.generateJWT(username);
-    let product;
-
-    // sync
-    if (user.serial === null) {
-      product = await generateProduct();
-      await request(app)
-        .post('/sync')
-        .set('authorization', `Bearer ${token}`)
-        .send({serial: product.serial, user_secret: product.user_secret});
-    } else {
-      product = await Product.findOne({serial: user.serial});
-    }
-
-    // post consumption
-    await request(app)
-      .put('/consumption')
-      .send({serial: product.serial, ocr_secret: product.ocr_secret, value: 350});
 
     const end = new Date();
     const start = new Date(end.getFullYear(), 0, 1);
@@ -379,11 +361,16 @@ describe('get consumption [user]', () => {
 
 describe('matching [user]', () => {
   it('should match your consumption with other people of your region', async () => {
+    await seed();
     const user = await User.findOne({userId});
     const token = user.generateJWT();
 
+    const end = new Date();
+    const start = new Date(end.getFullYear(), 0, 1);
+    const type = "year";
+
     const response = await request(app)
-      .get('/match')
+      .get(`/match?start=${start}&end=${end}&type=${type}`)
       .set('authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
