@@ -6,7 +6,7 @@ const fetch = require('node-fetch');
 const Product = require('./models/Product');
 const User = require('./models/User');
 const Consumption = require('./models/Consumption');
-const sampleConsumptions = require('./data');
+const generateSample = require('./data');
 
 async function generateProduct() {
   const serial = uuid();
@@ -20,15 +20,20 @@ async function generateProduct() {
 
 function seed() {
   return cleanDB().then(async () => {
-    const product = await generateProduct();
-    Product.insertMany(product).then(async docs => {
-      if (process.argv[2] && process.argv[2] === '--sync') {
-        const {token} = await logUser("toto", "test123");
-        await syncUser(product.serial, product.user_secret, token);
-      }
-      const sampleConsumptionsWithSerial = sampleConsumptions.map(c => c.serial = product.serial);
-      Consumption.insertMany(sampleConsumptionsWithSerial).then(() => process.exit(0));
-    });
+    await insert('toto', 'test123');
+    await insert('toto2', 'test123');
+  });
+}
+
+async function insert(user, password) {
+  const product = await generateProduct();
+  Product.insertMany(product).then(async docs => {
+    if (process.argv[2] && process.argv[2] === '--sync') {
+      const {token} = await logUser(user, password);
+      await syncUser(product.serial, product.user_secret, token);
+    }
+    const sampleConsumptionsWithSerial = generateSample().map(c => c['serial'] = product.serial);
+    Consumption.insertMany(sampleConsumptionsWithSerial).then(() => process.exit(0));
   });
 }
 

@@ -6,6 +6,11 @@ async function cleanDB() {
   }
 }
 
+function randomHelper(min, max) {
+  return Math.floor(Math.random() * (max - min) + min);
+}
+
 module.exports = {
-  cleanDB
+  cleanDB,
+  randomHelper
 };
