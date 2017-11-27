@@ -6,10 +6,13 @@ const {
   getRangeIndex,
   getConsumptionAccordingToType,
   getConsumptionAccordingToTypeWrapperSerial,
+  calculatePrice,
+  calculateAndPredictPriceIfNeeded,
   calculateRange,
   calculateRangeWrapperSerial,
   matching,
-  calculateAverage
+  calculateAverage,
+  calculateAverageWrapperSerial
 } = require('../controllers/consumption');
 
 const sampleConsumptions = require('../data'); // data
@@ -169,13 +172,16 @@ describe('[UNIT TEST] get consumption functions', () => {
   });
 
   it('should get the calulated value of consumption each hours, day, month according to a type of range and return the serial of the product', () => {
-    const resultYear = calculateRangeWrapperSerial(getConsumptionAccordingToType(sampleConsumptions, 'year'), 'abc-123');
-    const resultMonth = calculateRangeWrapperSerial(getConsumptionAccordingToType(sampleConsumptions, 'month'), 'abc-123');
-    const resultWeek = calculateRangeWrapperSerial(getConsumptionAccordingToType(sampleConsumptions, 'week'), 'abc-123');
-    const resultDay = calculateRangeWrapperSerial(getConsumptionAccordingToType(sampleConsumptions.slice(0, 4), 'day'), 'abc-123'); // first day of the week sample
+    const resultYear = calculateRangeWrapperSerial(getConsumptionAccordingToTypeWrapperSerial(sampleConsumptions, 'year', 'abc-123'));
+    const resultMonth = calculateRangeWrapperSerial(getConsumptionAccordingToTypeWrapperSerial(sampleConsumptions, 'month', 'abc-123'));
+    const resultWeek = calculateRangeWrapperSerial(getConsumptionAccordingToTypeWrapperSerial(sampleConsumptions, 'week', 'abc-123'));
+    const resultDay = calculateRangeWrapperSerial(getConsumptionAccordingToTypeWrapperSerial(sampleConsumptions.slice(0, 4), 'day', 'abc-123')); // first day of the week sample
 
     expect(resultYear).toEqual({
-      'abc-123': {"10": 1220}
+      serial: 'abc-123',
+      values: {
+        "10": 1220
+      }
     });
 
     expect(resultMonth).toEqual({
@@ -216,12 +222,12 @@ describe('[UNIT TEST] get consumption functions', () => {
   });
 
   it('should calculate an average value of consumption', () => {
-    const resultMonth = getConsumptionAccordingToTypeWrapperSerial(sampleConsumptions, 'month', 'abc-123');
-    console.log(resultMonth);
-    const result = calculateAverage(resultMonth);
+    const resultMonth = calculateRangeWrapperSerial(getConsumptionAccordingToTypeWrapperSerial(sampleConsumptions, 'month', 'abc-123'));
+    const result = calculateAverageWrapperSerial(resultMonth);
+
     expect(result).toEqual({
       serial: 'abc-123',
-      average: 154
+      average: 140
     });
   });
 });

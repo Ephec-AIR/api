@@ -92,7 +92,7 @@ function subtractAccordingToType(date, type) {
   const types = {
     'year': date => subYears(date, 1),
     'month': date => subMonths(date, 1),
-    'week': date => subMonths(date, 1),
+    'week': date => subWeeks(date, 1),
     'day': date => subDays(date, 1)
   };
   return types[type](date);
@@ -144,7 +144,10 @@ function getConsumptionAccordingToType (consumption, type) {
 function calculateRange(rangeConsumption) {
   return Object.keys(rangeConsumption).reduce((prev, range) => {
     if (!rangeConsumption[range].end) {
-      prev[range] = rangeConsumption[range].start;
+      prev[range] =
+        rangeConsumption[Number(range) - 1]
+          ? rangeConsumption[range].start - rangeConsumption[Number(range) - 1].start
+          : 0;
     } else {
       prev[range] = rangeConsumption[range].end - rangeConsumption[range].start;
     }
@@ -199,7 +202,7 @@ async function matching (start, end, type) {
  * @returns {Object} {serial: "abc-123": value: 150}
  */
 function calculateAverageWrapperSerial({serial, values}) {
-  const average = calculateAverage(values);
+  const {average} = calculateAverage(values);
   return {serial, average};
 }
 
@@ -209,7 +212,7 @@ function calculateAverageWrapperSerial({serial, values}) {
  * @returns {Object} {value: 150}
  */
 function calculateAverage(consumption) {
-  const consumptionIdx = Object.values(consumption[serial]);
+  const consumptionIdx = Object.values(consumption);
   const average = Math.round(consumptionIdx.reduce((prev, current) => prev += current, 0) / consumptionIdx.length);
   return {average};
 }
@@ -223,7 +226,10 @@ module.exports = {
   getRangeIndex,
   getConsumptionAccordingToType,
   getConsumptionAccordingToTypeWrapperSerial,
+  calculatePrice,
+  calculateAndPredictPriceIfNeeded,
   calculateRange,
   calculateRangeWrapperSerial,
+  calculateAverageWrapperSerial,
   calculateAverage
 };

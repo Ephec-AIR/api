@@ -15,7 +15,7 @@ async function create(req, res) {
 
 async function update(req, res) {
   const {supplier, postalCode} = req.body;
-  const promises = await Promise.all([setSupplier, postalCode]);
+  const promises = await Promise.all([setSupplier(req, supplier), setPostalCode(req, postalCode)]);
   const user = await User.findOne({userId: req.user.userId});
 
   // regenerate jwt
@@ -23,13 +23,13 @@ async function update(req, res) {
   res.status(200).json({token});
 }
 
-async function setSupplier(supplier) {
+async function setSupplier(req, supplier) {
   const user = await User.findOne({serial: req.user.serial});
   user.supplier = supplier;
   await user.save();
 }
 
-async function setPostalCode(postalCode) {
+async function setPostalCode(req, postalCode) {
   const product = await Product.findOne({serial: req.user.serial})
   product.postalCode = postalCode;
   await product.save();
