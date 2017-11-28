@@ -19,7 +19,7 @@ async function generateProduct() {
   return product;
 }
 
-function seed() {
+async function seed() {
   return cleanDB().then(async () => {
     await insert('toto', 'test123', "3");
     await insert(process.env.AIR_USER, process.env.AIR_PASSWORD, "2");
@@ -28,14 +28,13 @@ function seed() {
 
 async function insert(username, password, userId) {
   const product = await generateProduct();
-  Product.insertMany(product).then(async docs => {
-    await createUser(username, password, userId, product, 'Eni')
-    const sampleConsumptionsWithSerial = generateSample().map(consumption => {
-      consumption.serial = product.serial;
-      return consumption;
-    });
-    await Consumption.insertMany(sampleConsumptionsWithSerial);
+  const docs = await Product.insertMany(product);
+  const user = await createUser(username, password, userId, product, 'Eni');
+  const sampleConsumptionsWithSerial = generateSample().map(consumption => {
+    consumption.serial = product.serial;
+    return consumption;
   });
+  await Consumption.insertMany(sampleConsumptionsWithSerial);
 }
 
 async function createUser(username, password, userId, {serial}, supplier) {

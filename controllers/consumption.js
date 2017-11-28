@@ -39,11 +39,11 @@ async function get(req, res) {
   res.status(200).json({
     before: {
       values: beforeCpt,
-      price: calculatePrice(beforeCpt)
+      price: calculatePrice(req, beforeCpt)
     },
     now: {
       values: nowCpt,
-      price: calculateAndPredictPriceIfNeeded(beforeCpt, nowCpt)
+      price: calculateAndPredictPriceIfNeeded(req, beforeCpt, nowCpt)
     }
   });
 }
@@ -59,7 +59,7 @@ async function match(req, res) {
  * @param {Object} consumption {"0": 100, "1": 200}
  * @returns {Number} price the price that costs your consumption according to the supplier you are subscribed
  */
-function calculatePrice (consumption) {
+function calculatePrice (req, consumption) {
   const total = Object.keys(consumption).reduce((prev, range) => prev += consumption[range], 0);
   return total * SUPPLIERS_PRICE_KWH[req.user.supplier];
 }
@@ -69,7 +69,7 @@ function calculatePrice (consumption) {
  * @param {Object} nowCpt now consumption {"0": 100, "1": 200}
  * @returns {Number} price the price that costs your consumption according to the supplier you are subscribed
  */
-function calculateAndPredictPriceIfNeeded (beforeCpt, nowCpt) {
+function calculateAndPredictPriceIfNeeded (req, beforeCpt, nowCpt) {
   let consumption = Object.values(nowCpt);
   const diff = Object.keys(beforeCpt).length - Object.keys(nowCpt).length;
   if (diff > 0) {
