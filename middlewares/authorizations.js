@@ -60,7 +60,16 @@ const onlyActiveOCR = async (req, res, next) => {
 }
 
 const onlySyncedUser = (req, res, next) => {
+  console.log(req.user.serial, req.user.postalCode, req.user.supplier)
   if (!req.user.serial) {
+    res.status(412).end();
+    return;
+  }
+  next();
+}
+
+const onlyUpdatedUser = (req, res, next) => {
+  if (!req.user.postalCode || !req.user.supplier) {
     res.status(412).end();
     return;
   }
@@ -72,5 +81,6 @@ module.exports = {
   onlyAdmin,
   doUserOwn,
   onlyActiveOCR,
-  onlySyncedUser
+  onlySyncedUser,
+  onlyUpdatedUser
 }

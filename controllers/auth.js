@@ -21,26 +21,27 @@ async function login(req, res) {
   }
 
   const data = await response.json();
-  let user = await User.findOne({userId: data.uid});
+  let user = await User.findOne({userId: data.uid}).populate('product');
   // if user does not exist in MONGODB, create it.
   if (!user) {
     user = await new User({
       userId: data.uid,
+      username: data.username
     }).save();
   }
-  const token = user.generateJWT(data.username);
+  const token = user.generateJWT();
   res.status(200).json({token})
 }
 
 async function sync(req, res) {
   const {serial} = req.body;
 
-  const user = await User.findOne({userId: req.user.userId});
+  const user = await User.findOne({userId: req.user.userId}).populate('product');
   user.serial = serial;
   await user.save();
 
   // regenerate jwt
-  const token = user.generateJWT(req.user.username);
+  const token = user.generateJWT();
   res.status(200).json({token});
 }
 

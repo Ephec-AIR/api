@@ -24,13 +24,9 @@ npm run prod
 
 > inject fake data
 ```
-node seed.js seed
+node seed-node.js
 ```
 
-> inject fake data + sync test user (need the server to be started)
-```
-node seed.js --sync
-```
 
 ### Doc
 

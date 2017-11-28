@@ -12,13 +12,24 @@ const ConsumptionSchema = new mongoose.Schema({
   },
   serial: {
     type: String,
-    ref: 'Product',
     required: 'please supply a product-key'
   }
+}, {toJSON: {virtuals: true}});
+
+ConsumptionSchema.pre('find', autopopulate);
+ConsumptionSchema.pre('findOne', autopopulate);
+
+ConsumptionSchema.virtual('product', {
+  ref: 'Product', // The model to use
+  localField: 'serial', // Find people where `localField`
+  foreignField: 'serial', // is equal to `foreignField`
+  // If `justOne` is true, 'members' will be a single doc as opposed to
+  // an array. `justOne` is false by default.
+  justOne: true
 });
 
 function autopopulate(next) {
-  this.populate('serial');
+  this.populate('product');
   next();
 }
 
