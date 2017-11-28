@@ -317,7 +317,7 @@ describe('get consumption [user]', () => {
   it('should get a list of consumptions + price if the product requested is sync with the user', async () => {
     // insert 2 weeks data, link users
     await seed();
-    const user = await User.findOne({userId});
+    const user = await User.findOne({userId}).populate('product');
     const token = user.generateJWT(username);
 
     const end = new Date();
@@ -362,7 +362,7 @@ describe('get consumption [user]', () => {
 describe('matching [user]', () => {
   it('should match your consumption with other people of your region', async () => {
     await seed();
-    const user = await User.findOne({userId});
+    const user = await User.findOne({userId}).populate('product');
     const token = user.generateJWT();
 
     const end = new Date();
@@ -376,7 +376,7 @@ describe('matching [user]', () => {
     expect(response.status).toBe(200);
     expect(response.body).toEqual(expect.objectContaining({
       serial: expect.any(String),
-      value: expect.any(Number),
+      average: expect.any(Number),
       username: expect.any(String),
       values: expect.any(Object)
     }));

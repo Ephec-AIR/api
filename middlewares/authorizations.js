@@ -60,6 +60,7 @@ const onlyActiveOCR = async (req, res, next) => {
 }
 
 const onlySyncedUser = (req, res, next) => {
+  console.log(req.user.serial, req.user.postalCode, req.user.supplier)
   if (!req.user.serial) {
     res.status(412).end();
     return;

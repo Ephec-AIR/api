@@ -31,7 +31,6 @@ async function setSupplier(req, supplier) {
 
 async function setPostalCode(req, postalCode) {
   const product = await Product.findOne({serial: req.user.serial});
-  console.log(req.user.serial, product);
   product.postalCode = postalCode;
   await product.save();
 }

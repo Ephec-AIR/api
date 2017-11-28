@@ -50,7 +50,6 @@ UserSchema.virtual('product', {
  * If the user is not linked to an OCR yet, replace the ocr's serial with null.
  */
 UserSchema.methods.generateJWT = function () {
-  console.log(this.product, this.serial);
   return jwt.sign({
       userId: this.userId,
       username: this.username,
