@@ -32,6 +32,9 @@ async function get(req, res) {
     Consumption.find({serial: req.user.serial, date: {$gte: start, $lte: end}})
   ]);
 
+  //console.log(start, end);
+  //console.log(await Consumption.find({serial: req.user.serial, date: {$gte: start, $lte: end}}));
+
   const [beforeCpt, nowCpt] = consumptions
     .map(consumption => getConsumptionAccordingToType(consumption, type))
     .map(consumption => calculateRange(consumption))
