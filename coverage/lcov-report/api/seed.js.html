@@ -20,9 +20,9 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">90.63% </span>
+        <span class="strong">91.43% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>29/32</span>
+        <span class='fraction'>32/35</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
@@ -35,9 +35,9 @@
         <span class='fraction'>6/7</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">90.63% </span>
+        <span class="strong">91.43% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>29/32</span>
+        <span class='fraction'>32/35</span>
       </div>
     </div>
   </div>
@@ -98,7 +98,10 @@
 53
 54
 55
-56</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+56
+57
+58
+59</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -110,16 +113,19 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
@@ -127,18 +133,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">3600x</span>
-<span class="cline-any cline-yes">3600x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">19800x</span>
+<span class="cline-any cline-yes">19800x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -164,11 +170,11 @@ const User = require('./models/User');
 const Consumption = require('./models/Consumption');
 const {generateSample} = require('./data');
 &nbsp;
-async function generateProduct() {
+async function generateProduct(postalCode) {
   const serial = uuid();
   const ocr_secret = (await promisify(crypto.randomBytes)(20)).toString('base64');
   const user_secret = (await promisify(crypto.randomBytes)(12)).toString('base64');
-  const product = {serial, ocr_secret, user_secret};
+  const product = {serial, ocr_secret, user_secret, postalCode};
   console.log('SERIAL:', serial);
   console.log('USER_SECRET:', user_secret);
   return product;
@@ -176,13 +182,16 @@ async function generateProduct() {
 &nbsp;
 async function seed() {
   return cleanDB().then(async () =&gt; {
-    await insert('toto', 'test123', "3");
-    await insert(process.env.AIR_USER, process.env.AIR_PASSWORD, "2");
+    await insert('Christian', 'Nwamba', 10000, "1");
+    await insert(process.env.AIR_USER, process.env.AIR_PASSWORD, 10000, "2");
+    await insert('toto', 'test123', 10000, "3");
+    await insert('Prosper', 'Otemuyia', 10000, "4");
+    await insert('Lecrae', 'Lecrae', 10000, "5");
   });
 }
 &nbsp;
-async function insert(username, password, userId) {
-  const product = await generateProduct();
+async function insert(username, password, postalCode, userId) {
+  const product = await generateProduct(postalCode);
   const docs = await Product.insertMany(product);
   const user = await createUser(username, password, userId, product, 'Eni');
   const sampleConsumptionsWithSerial = generateSample().map(consumption =&gt; {
@@ -214,7 +223,7 @@ module.exports = seed;
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Tue Nov 28 2017 11:44:03 GMT+0100 (CET)
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Tue Nov 28 2017 15:24:46 GMT+0100 (CET)
 </div>
 </div>
 <script src="../prettify.js"></script>
