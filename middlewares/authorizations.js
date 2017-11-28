@@ -67,10 +67,19 @@ const onlySyncedUser = (req, res, next) => {
   next();
 }
 
+const onlyUpdatedUser = (req, res, next) => {
+  if (!req.user.postalCode || !req.user.supplier) {
+    res.status(412).end();
+    return;
+  }
+  next();
+}
+
 module.exports = {
   parseJWT,
   onlyAdmin,
   doUserOwn,
   onlyActiveOCR,
-  onlySyncedUser
+  onlySyncedUser,
+  onlyUpdatedUser
 }

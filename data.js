@@ -3,7 +3,7 @@ const {eachDay, addHours, subDays, subWeeks, addWeeks} = require('date-fns');
 let consumptions = [];
 let start = 300;
 const NBR_VALUES_BY_DAY = 24;
-const MAX_CPT_PER_HOUR = 200;
+const MAX_CPT_PER_HOUR = 25;
 
 // 1 week consumptions
 const hardcoded = [

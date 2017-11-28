@@ -16,10 +16,10 @@ async function create(req, res) {
 async function update(req, res) {
   const {supplier, postalCode} = req.body;
   const promises = await Promise.all([setSupplier(req, supplier), setPostalCode(req, postalCode)]);
-  const user = await User.findOne({userId: req.user.userId}).populate('user_product');
+  const user = await User.findOne({userId: req.user.userId}).populate('product');
 
   // regenerate jwt
-  const token = user.generateJWT(req.user.username);
+  const token = user.generateJWT();
   res.status(200).json({token});
 }
 
@@ -30,7 +30,8 @@ async function setSupplier(req, supplier) {
 }
 
 async function setPostalCode(req, postalCode) {
-  const product = await Product.findOne({serial: req.user.serial})
+  const product = await Product.findOne({serial: req.user.serial});
+  console.log(req.user.serial, product);
   product.postalCode = postalCode;
   await product.save();
 }

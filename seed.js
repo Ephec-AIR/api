@@ -9,11 +9,11 @@ const User = require('./models/User');
 const Consumption = require('./models/Consumption');
 const {generateSample} = require('./data');
 
-async function generateProduct() {
+async function generateProduct(postalCode) {
   const serial = uuid();
   const ocr_secret = (await promisify(crypto.randomBytes)(20)).toString('base64');
   const user_secret = (await promisify(crypto.randomBytes)(12)).toString('base64');
-  const product = {serial, ocr_secret, user_secret};
+  const product = {serial, ocr_secret, user_secret, postalCode};
   console.log('SERIAL:', serial);
   console.log('USER_SECRET:', user_secret);
   return product;
@@ -21,13 +21,16 @@ async function generateProduct() {
 
 async function seed() {
   return cleanDB().then(async () => {
-    await insert('toto', 'test123', "3");
-    await insert(process.env.AIR_USER, process.env.AIR_PASSWORD, "2");
+    await insert('Christian', 'Nwamba', 10000, "1");
+    await insert(process.env.AIR_USER, process.env.AIR_PASSWORD, 10000, "2");
+    await insert('toto', 'test123', 10000, "3");
+    await insert('Prosper', 'Otemuyia', 10000, "4");
+    await insert('Lecrae', 'Lecrae', 10000, "5");
   });
 }
 
-async function insert(username, password, userId) {
-  const product = await generateProduct();
+async function insert(username, password, postalCode, userId) {
+  const product = await generateProduct(postalCode);
   const docs = await Product.insertMany(product);
   const user = await createUser(username, password, userId, product, 'Eni');
   const sampleConsumptionsWithSerial = generateSample().map(consumption => {

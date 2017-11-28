@@ -8,7 +8,7 @@ const dotenv = require('dotenv').config();
 const bodyParser = require('body-parser');
 const validator = require('express-validator');
 const catchErrors = require('./middlewares/errors');
-const {parseJWT, onlyAdmin, doUserOwn, onlyActiveOCR, onlySyncedUser} = require('./middlewares/authorizations');
+const {parseJWT, onlyAdmin, doUserOwn, onlyActiveOCR, onlySyncedUser, onlyUpdatedUser} = require('./middlewares/authorizations');
 const {requireFields, requireQuery} = require('./middlewares/validator');
 const {login, sync} = require('./controllers/auth');
 const {addConsumtion, getConsumption, match} = require('./controllers/consumption');
@@ -42,7 +42,7 @@ app.put('/consumption', requireFields("ocr_secret", "serial", "value"), catchErr
 app.get('/consumption', parseJWT, onlySyncedUser, requireQuery("start", "end", "type"), catchErrors(getConsumption));
 app.post('/product', parseJWT, onlyAdmin, catchErrors(createProduct));
 app.put('/product', parseJWT, onlySyncedUser, requireFields("postalCode", "supplier"), catchErrors(update));
-app.get('/match', parseJWT, onlySyncedUser, requireQuery("start", "end", "type"), catchErrors(match));
+app.get('/match', parseJWT, onlySyncedUser, onlyUpdatedUser, requireQuery("start", "end", "type"), catchErrors(match));
 
 let HTTPServer = http.createServer(app);
 HTTPServer.listen(PORT, _ => {

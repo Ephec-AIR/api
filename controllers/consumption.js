@@ -50,7 +50,7 @@ async function get(req, res) {
 
 async function match(req, res) {
   const {start, end, type} = req.query;
-  const result = await matching(start, end, type);
+  const result = await matching(start, end, type, req);
   res.status(200).json(result);
 }
 
@@ -161,13 +161,14 @@ function calculateRange(rangeConsumption) {
  * @param {Date} end
  * @param {String} type, type year, month, week, day
  */
-async function matching (start, end, type) {
-  const regionConsumption =
-    await Consumption.find({serial: {postalCode: req.user.postalCode}, date: {$gte: start, $lte: end}});
+async function matching (start, end, type, req) {
+  let regionConsumption =
+    await Consumption.find({date: {$gte: start, $lte: end}}).populate('product');
+  regionConsumption = regionConsumption.filter(consumption => consumption.product.postalCode === req.user.postalCode);
 
   // {"123-abc": [{date: ..., value: ...}, {}],...}
   const consumptionGroupedBySerial = regionConsumption.reduce((prev, current) => {
-    const serial = current.serial.serial;
+    const serial = current.serial;
     if (prev[serial]) {
       prev[serial].push({date: current.date, value: current.value});
     } else {
@@ -187,13 +188,18 @@ async function matching (start, end, type) {
 
   // sort averages
   const sortedAverages = averages.sort((a, b) => b.value - a.value);
-  console.log(sortedAverages);
   // find the averages better than you
   const bests = sortedAverages.slice(0, sortedAverages.findIndex(avg => avg.serial === req.user.serial));
+
+  // Woops, no best, YOU IS THE BEST !
+  if (bests.length === 0) {
+    return {error: 'Well... Vous semblez être le meilleur consommateur de votre région !'};
+  }
+
   // pick up one
   const best = bests[Math.floor(Math.random() * (bests.length - 1))];
   // get his username
-  const {username} = await User.find({serial: best.serial});
+  const {username} = await User.findOne({serial: best.serial});
   return {...best, username, values: (totalConsumption.find(consumption => consumption.serial === best.serial)).values};
 }
 

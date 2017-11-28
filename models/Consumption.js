@@ -19,7 +19,7 @@ const ConsumptionSchema = new mongoose.Schema({
 ConsumptionSchema.pre('find', autopopulate);
 ConsumptionSchema.pre('findOne', autopopulate);
 
-ConsumptionSchema.virtual('associated-product', {
+ConsumptionSchema.virtual('product', {
   ref: 'Product', // The model to use
   localField: 'serial', // Find people where `localField`
   foreignField: 'serial', // is equal to `foreignField`
@@ -29,7 +29,7 @@ ConsumptionSchema.virtual('associated-product', {
 });
 
 function autopopulate(next) {
-  this.populate('associated-product');
+  this.populate('product');
   next();
 }
 

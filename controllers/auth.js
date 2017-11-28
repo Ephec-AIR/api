@@ -21,7 +21,7 @@ async function login(req, res) {
   }
 
   const data = await response.json();
-  let user = await User.findOne({userId: data.uid});
+  let user = await User.findOne({userId: data.uid}).populate('product');
   // if user does not exist in MONGODB, create it.
   if (!user) {
     user = await new User({
@@ -36,7 +36,7 @@ async function login(req, res) {
 async function sync(req, res) {
   const {serial} = req.body;
 
-  const user = await User.findOne({userId: req.user.userId});
+  const user = await User.findOne({userId: req.user.userId}).populate('product');
   user.serial = serial;
   await user.save();
 

@@ -35,7 +35,7 @@ const UserSchema = new mongoose.Schema({
 UserSchema.index({userId: 1}, {unique: true});
 //UserSchema.pre('findOne', autopopulate);
 
-UserSchema.virtual('user_product', {
+UserSchema.virtual('product', {
   ref: 'Product', // The model to use
   localField: 'serial', // Find people where `localField`
   foreignField: 'serial', // is equal to `foreignField`
@@ -50,14 +50,15 @@ UserSchema.virtual('user_product', {
  * If the user is not linked to an OCR yet, replace the ocr's serial with null.
  */
 UserSchema.methods.generateJWT = function () {
+  console.log(this.product, this.serial);
   return jwt.sign({
       userId: this.userId,
       username: this.username,
       supplier: this.supplier,
       isAdmin: this.isAdmin,
       serial: this.serial ? this.serial : null,
-      user_secret: this.serial ? this.serial.user_secret : null,
-      postalCode: this.serial ? this.serial.postalCode : null
+      user_secret: this.product ? this.product.user_secret : null,
+      postalCode: this.product ? this.product.postalCode : null
   }, JWT_SECRET, {
     expiresIn: '1day',
     subject: 'air'
