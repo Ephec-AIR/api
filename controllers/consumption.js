@@ -1,4 +1,4 @@
-const {subYears, subMonths, subWeeks, subDays} = require('date-fns');
+const {startOfWeek, subYears, subMonths, subWeeks, subDays, subHours} = require('date-fns');
 const User = require('../models/User');
 const Product = require('../models/Product');
 const Consumption = require('../models/Consumption');
@@ -25,9 +25,14 @@ async function add(req, res) {
 
 async function get(req, res) {
   const {start, end, type} = req.query;
+  //console.log(subtractAccordingToType(start, type));
+  //console.log('BUG', subHours(start, 1));
+  //console.log('CORRECT', subHours(startOfWeek(new Date(), {weekStartsOn: 1}), 1));
+  //console.log(new Date(start));
+  //console.log(new Date(end));
   const consumptions = await Promise.all([
     // ma consommation d'avant
-    Consumption.find({serial: req.user.serial, date: {$gte: subtractAccordingToType(start, type), $lte: start}}),
+    Consumption.find({serial: req.user.serial, date: {$gte: subtractAccordingToType(start, type), $lte: subHours(start, 1)}}),
     // ma consommation courante
     Consumption.find({serial: req.user.serial, date: {$gte: start, $lte: end}})
   ]);
@@ -38,6 +43,8 @@ async function get(req, res) {
   const [beforeCpt, nowCpt] = consumptions
     .map(consumption => getConsumptionAccordingToType(consumption, type))
     .map(consumption => calculateRange(consumption))
+
+  //console.log(beforeCpt, nowCpt);
 
   res.status(200).json({
     before: {
@@ -105,10 +112,18 @@ function getRangeIndex (date, type) {
   const types = {
     'year': date => date.getMonth(),
     'month': date => date.getDate(),
-    'week': date => date.getDay(), // first day begins sunday in date api !
+    'week': date => getDayOfWeek(date), // first day begins sunday in date api !
     'day': date => date.getHours()
   };
   return types[type](date);
+}
+
+function getDayOfWeek(date) {
+  let day = date.getDay() - 1;
+  if (day === -1) {
+    day = 6
+  }
+  return day;
 }
 
 function getConsumptionAccordingToTypeWrapperSerial(consumption, type, serial) {
@@ -127,8 +142,10 @@ function calculateRangeWrapperSerial({serial, values}) {
  * @returns {Object} {"0": {start: 300, end: 400}, "1": {start: 400, end: 500},...}
  */
 function getConsumptionAccordingToType (consumption, type) {
-  return consumption.reduce((prev, current) => {
+  const cpt = consumption.reduce((prev, current) => {
     const index = getRangeIndex(current.date, type);
+    //console.log(current.date, index);
+    //if (index === 1) console.log(current.date, new Date(current.date));
     if (prev[index] && prev[index].start) {
       prev[index].end = current.value;
     } else {
@@ -137,6 +154,8 @@ function getConsumptionAccordingToType (consumption, type) {
     }
     return prev;
   }, {});
+  //console.log(cpt);
+  return cpt;
 }
 
 /**

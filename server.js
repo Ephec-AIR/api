@@ -13,6 +13,7 @@ const {requireFields, requireQuery} = require('./middlewares/validator');
 const {login, sync} = require('./controllers/auth');
 const {addConsumtion, getConsumption, match} = require('./controllers/consumption');
 const {createProduct, update} = require('./controllers/product');
+//const dateParser = require('express-query-date');
 const app = express();
 
 const PORT = process.env.PORT || 3000;
@@ -32,6 +33,7 @@ const corsOptions = {
 // middlewares
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
+//app.use(dateParser());
 app.use(validator());
 
 // REST
