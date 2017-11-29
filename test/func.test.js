@@ -65,13 +65,13 @@ describe('[UNIT TEST] get consumption functions', () => {
     });
 
     expect(resultWeek).toEqual({
-      "1": {start: 300, end: 450},
-      "2": {start: 510, end: 610},
-      "3": {start: 630, end: 705},
-      "4": {start: 710, end: 820},
-      "5": {start: 850, end: 1000},
-      "6": {start: 1100, end: 1410},
-      "0": {start: 1435, end: 1520}
+      "0": {start: 300, end: 450},
+      "1": {start: 510, end: 610},
+      "2": {start: 630, end: 705},
+      "3": {start: 710, end: 820},
+      "4": {start: 850, end: 1000},
+      "5": {start: 1100, end: 1410},
+      "6": {start: 1435, end: 1520}
     });
 
     expect(resultDay).toEqual({
@@ -103,13 +103,13 @@ describe('[UNIT TEST] get consumption functions', () => {
     });
 
     expect(resultWeek).toEqual({
-      "1": 150,
-      "2": 100,
-      "3": 75,
-      "4": 110,
-      "5": 150,
-      "6": 310,
-      "0": 85
+      "0": 150,
+      "1": 100,
+      "2": 75,
+      "3": 110,
+      "4": 150,
+      "5": 310,
+      "6": 85
     });
 
     expect(resultDay).toEqual({
@@ -149,13 +149,13 @@ describe('[UNIT TEST] get consumption functions', () => {
     expect(resultWeek).toEqual({
       serial: 'abc-123',
       values: {
-        "1": {start: 300, end: 450},
-        "2": {start: 510, end: 610},
-        "3": {start: 630, end: 705},
-        "4": {start: 710, end: 820},
-        "5": {start: 850, end: 1000},
-        "6": {start: 1100, end: 1410},
-        "0": {start: 1435, end: 1520}
+        "0": {start: 300, end: 450},
+        "1": {start: 510, end: 610},
+        "2": {start: 630, end: 705},
+        "3": {start: 710, end: 820},
+        "4": {start: 850, end: 1000},
+        "5": {start: 1100, end: 1410},
+        "6": {start: 1435, end: 1520}
       }
     });
 
@@ -199,13 +199,13 @@ describe('[UNIT TEST] get consumption functions', () => {
     expect(resultWeek).toEqual({
       serial: 'abc-123',
       values: {
-        "1": 150,
-        "2": 100,
-        "3": 75,
-        "4": 110,
-        "5": 150,
-        "6": 310,
-        "0": 85
+        "0": 150,
+        "1": 100,
+        "2": 75,
+        "3": 110,
+        "4": 150,
+        "5": 310,
+        "6": 85
       }
     });
 
