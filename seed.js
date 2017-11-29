@@ -37,7 +37,6 @@ async function insert(username, password, postalCode, userId) {
     consumption.serial = product.serial;
     return consumption;
   });
-  console.log(sampleConsumptionsWithSerial);
   await Consumption.insertMany(sampleConsumptionsWithSerial);
 }
 
