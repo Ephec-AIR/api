@@ -13,6 +13,7 @@ const {requireFields, requireQuery} = require('./middlewares/validator');
 const {login, sync} = require('./controllers/auth');
 const {addConsumtion, getConsumption, match} = require('./controllers/consumption');
 const {createProduct, update} = require('./controllers/product');
+const {tip} = require('./controllers/tips');
 //const dateParser = require('express-query-date');
 const app = express();
 
@@ -39,6 +40,7 @@ app.use(validator());
 // REST
 app.get('/health', (req, res) => res.send('server ok.\n'));
 app.post('/login', requireFields("username", "password"), catchErrors(login));
+app.get('/tip', catchErrors(tip));
 app.post('/sync', parseJWT, requireFields("serial", "user_secret"), catchErrors(doUserOwn), catchErrors(sync));
 app.put('/consumption', requireFields("ocr_secret", "serial", "value"), catchErrors(onlyActiveOCR), catchErrors(addConsumtion));
 app.get('/consumption', parseJWT, onlySyncedUser, requireQuery("start", "end", "type"), catchErrors(getConsumption));
