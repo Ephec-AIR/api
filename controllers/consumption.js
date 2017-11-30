@@ -1,4 +1,5 @@
 const {startOfWeek, subYears, subMonths, subWeeks, subDays, subHours} = require('date-fns');
+const {mean} = require('simple-statistics');
 const User = require('../models/User');
 const Product = require('../models/Product');
 const Consumption = require('../models/Consumption');
@@ -205,24 +206,43 @@ async function matching (start, end, type, req) {
   const totalConsumption = rangeConsumption
     .map(consumption => calculateRangeWrapperSerial(consumption));
 
-  const averages = totalConsumption
-    .map(consumption => calculateAverageWrapperSerial(consumption));
+  //console.log(totalConsumption);
+  const groupedByRange = {};
+  totalConsumption.map(consumption => {
+    for (const range in consumption.values) {
+      const value = consumption.values[range];
+      if (!groupedByRange[range]) {
+        groupedByRange[range] = [];
+      }
+      groupedByRange[range].push(value);
+    }
+  });
+  //console.log(groupedByRange);
+
+  const average = Object.keys(groupedByRange).reduce((prev, current) => {
+    console.log(current);
+    prev[current] = mean(Object.values(groupedByRange[current]));
+    return prev;
+  }, {})
+
+  //console.log(average);
 
   // sort averages
-  const sortedAverages = averages.sort((a, b) => b.value - a.value);
+  //const sortedAverages = averages.sort((a, b) => b.value - a.value);
   // find the averages better than you
-  const bests = sortedAverages.slice(0, sortedAverages.findIndex(avg => avg.serial === req.user.serial));
+  //const bests = sortedAverages.slice(0, sortedAverages.findIndex(avg => avg.serial === req.user.serial));
 
   // Woops, no best, YOU IS THE BEST !
-  if (bests.length === 0) {
-    return {error: 'Well... Vous semblez être le meilleur consommateur de votre région !'};
-  }
+  //if (bests.length === 0) {
+  //  return {error: 'Well... Vous semblez être le meilleur consommateur de votre région !'};
+  //}
 
   // pick up one
-  const best = bests[Math.floor(Math.random() * (bests.length - 1))];
+  //const best = bests[Math.floor(Math.random() * (bests.length - 1))];
   // get his username
-  const {username} = await User.findOne({serial: best.serial});
-  return {...best, username, values: (totalConsumption.find(consumption => consumption.serial === best.serial)).values};
+  //const {username} = await User.findOne({serial: best.serial});
+  //return {...best, username, values: (totalConsumption.find(consumption => consumption.serial === best.serial)).values};
+  return {values: average}
 }
 
 /**
