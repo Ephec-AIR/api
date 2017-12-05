@@ -220,7 +220,6 @@ async function matching (start, end, type, req) {
   //console.log(groupedByRange);
 
   const average = Object.keys(groupedByRange).reduce((prev, current) => {
-    console.log(current);
     prev[current] = mean(Object.values(groupedByRange[current]));
     return prev;
   }, {})
