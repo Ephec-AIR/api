@@ -1,8 +1,11 @@
+const casual = require('casual');
+const faker = require('faker');
 const {randomHelper} = require('./utils');
 const {eachDay, addHours, subDays, subWeeks, addWeeks} = require('date-fns');
 const START_VALUE = 300;
 const NBR_VALUES_PER_DAY = 24;
 const MAX_CPT_PER_HOUR = 2;
+const MAX_EVENTS = 5;
 let start;
 
 // 1 week consumptions
@@ -157,7 +160,23 @@ function generateValues(dateRange) {
   return consumptions;
 }
 
+function generateEvents () {
+  const events = [];
+  for (let i = 0; i < MAX_EVENTS; i++) {
+    const event = {
+      date: faker.date.future(),
+      place: `${faker.address.streetAddress()} ${faker.address.city()} ${faker.address.countryCode()}`,
+      title: casual.title,
+      description: casual.text,
+      url: faker.internet.url()
+    }
+    events.push(event);
+  }
+  return events;
+}
+
 module.exports = {
   generateSample,
+  generateEvents,
   hardcoded
 }
