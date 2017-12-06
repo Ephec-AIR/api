@@ -7,7 +7,8 @@ const fetch = require('node-fetch');
 const Product = require('./models/Product');
 const User = require('./models/User');
 const Consumption = require('./models/Consumption');
-const {generateSample} = require('./data');
+const Events = require('./models/Events');
+const {generateSample, generateEvents} = require('./data');
 
 async function generateProduct(postalCode) {
   const serial = uuid();
@@ -26,7 +27,8 @@ async function seed() {
     await insert('toto', 'test123', 10000, "3");
     await insert('Prosper', 'Otemuyia', 10000, "4");
     await insert('Lecrae', 'Lecrae', 10000, "5");
-  });
+    await Events.insertMany(generateEvents());
+  }).catch(err => console.error(err));
 }
 
 async function insert(username, password, postalCode, userId) {
