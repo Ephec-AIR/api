@@ -45,7 +45,15 @@ async function sync(req, res) {
   res.status(200).json({token});
 }
 
+async function admin(req, res) {
+  const {admin} = req.body;
+  const user = await User.findOne({userId: req.user.userId});
+  user.isAdmin = admin;
+  res.status(200).end();
+}
+
 module.exports = {
   login,
-  sync
+  sync,
+  admin
 };
