@@ -39,7 +39,7 @@ app.use(validator());
 
 // REST
 app.get('/health', (req, res) => res.send('server ok.\n'));
-app.put('/admin', parseJWT, onlyAdmin, requireFields("admin"), catchErrors(admin))
+app.put('/admin', parseJWT, onlyAdmin, requireFields("username, admin"), catchErrors(admin))
 app.post('/login', requireFields("username", "password"), catchErrors(login));
 app.get('/tip', catchErrors(tip));
 app.get('/events', catchErrors(events));
