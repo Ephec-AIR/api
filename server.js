@@ -10,7 +10,7 @@ const validator = require('express-validator');
 const catchErrors = require('./middlewares/errors');
 const {parseJWT, onlyAdmin, doUserOwn, onlyActiveOCR, onlySyncedUser, onlyUpdatedUser} = require('./middlewares/authorizations');
 const {requireFields, requireQuery} = require('./middlewares/validator');
-const {login, sync} = require('./controllers/auth');
+const {login, sync, admin} = require('./controllers/auth');
 const {addConsumtion, getConsumption, match} = require('./controllers/consumption');
 const {createProduct, update} = require('./controllers/product');
 const {tip, events} = require('./controllers/tips');
@@ -39,6 +39,7 @@ app.use(validator());
 
 // REST
 app.get('/health', (req, res) => res.send('server ok.\n'));
+app.put('/admin', parseJWT, onlyAdmin, requireFields("admin"), catchErrors(admin))
 app.post('/login', requireFields("username", "password"), catchErrors(login));
 app.get('/tip', catchErrors(tip));
 app.get('/events', catchErrors(events));
