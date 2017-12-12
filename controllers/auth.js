@@ -46,8 +46,8 @@ async function sync(req, res) {
 }
 
 async function admin(req, res) {
-  const {admin} = req.body;
-  const user = await User.findOne({userId: req.user.userId});
+  const {username, admin} = req.body;
+  const user = await User.findOne({username});
   user.isAdmin = admin;
   res.status(200).end();
 }

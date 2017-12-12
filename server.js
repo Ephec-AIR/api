@@ -1,5 +1,3 @@
-// Server entrypoint
-
 const http = require('http');
 const url = require('url');
 const cors = require('cors');
@@ -14,7 +12,6 @@ const {login, sync, admin} = require('./controllers/auth');
 const {addConsumtion, getConsumption, match} = require('./controllers/consumption');
 const {createProduct, update} = require('./controllers/product');
 const {tip, events} = require('./controllers/tips');
-//const dateParser = require('express-query-date');
 const app = express();
 
 const PORT = process.env.PORT || 3000;
@@ -34,22 +31,20 @@ const corsOptions = {
 // middlewares
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
-//app.use(dateParser());
 app.use(validator());
 
 // REST
 app.get('/health', (req, res) => res.send('server ok.\n'));
-app.put('/admin', parseJWT, onlyAdmin, requireFields("admin"), catchErrors(admin))
 app.post('/login', requireFields("username", "password"), catchErrors(login));
-app.get('/tip', catchErrors(tip));
-app.get('/events', catchErrors(events));
 app.post('/sync', parseJWT, requireFields("serial", "user_secret"), catchErrors(doUserOwn), catchErrors(sync));
 app.put('/consumption', requireFields("ocr_secret", "serial", "value"), catchErrors(onlyActiveOCR), catchErrors(addConsumtion));
 app.get('/consumption', parseJWT, onlySyncedUser, requireQuery("start", "end", "type"), catchErrors(getConsumption));
 app.post('/product', parseJWT, onlyAdmin, catchErrors(createProduct));
 app.put('/product', parseJWT, onlySyncedUser, requireFields("postalCode", "supplier"), catchErrors(update));
+app.put('/admin', parseJWT, onlyAdmin, requireFields("username", "admin"), catchErrors(admin));
 app.get('/match', parseJWT, onlySyncedUser, onlyUpdatedUser, requireQuery("start", "end", "type"), catchErrors(match));
-
+app.get('/tip', catchErrors(tip));
+app.get('/events', catchErrors(events));
 let HTTPServer = http.createServer(app);
 HTTPServer.listen(PORT, _ => {
   console.log(`listening on http://localhost:${PORT}`);
