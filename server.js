@@ -37,7 +37,7 @@ app.use(validator());
 app.get('/health', (req, res) => res.send('server ok.\n'));
 app.post('/login', requireFields("username", "password"), catchErrors(login));
 app.post('/sync', parseJWT, requireFields("serial", "user_secret"), catchErrors(doUserOwn), catchErrors(sync));
-app.put('/consumption', requireFields("ocr_secret", "serial", "value"), catchErrors(onlyActiveOCR), catchErrors(addConsumtion));
+app.post('/consumption', requireFields("ocr_secret", "serial", "value"), catchErrors(onlyActiveOCR), catchErrors(addConsumtion));
 app.get('/consumption', parseJWT, onlySyncedUser, requireQuery("start", "end", "type"), catchErrors(getConsumption));
 app.post('/product', parseJWT, onlyAdmin, catchErrors(createProduct));
 app.put('/product', parseJWT, onlySyncedUser, requireFields("postalCode", "supplier"), catchErrors(update));
