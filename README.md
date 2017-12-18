@@ -4,8 +4,8 @@
 ### REST api for AIR. 
 
 ### Installation
-> You need node 8.9.3 or higher in order to run this api https://nodejs.org/en/
-> You need mongdb in order to run this api https://www.mongodb.com/
+> You need node 8.9.3 or higher in order to run this api https://nodejs.org/en/    
+> You need mongdb in order to run this api https://www.mongodb.com/     
 
 > clone the repo
 ```
